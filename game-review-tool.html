@@ -1,0 +1,1132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Review Tool</title>
+    <style>
+        .back-to-dashboard {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            color: #1a4d2e;
+            padding: 12px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .back-to-dashboard:hover {
+            background: #4ade80;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(74, 222, 128, 0.3);
+        }
+        :root {
+            --brand-red: #4ade80;
+            --brand-black: #1a4d2e;
+            --brand-white: #FFFFFF;
+            --gray-50: #F5F5F5;
+            --gray-200: #E0E0E0;
+            --gray-500: #808080;
+            --gray-900: #333333;
+            --dark-gray: #0f2818;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #1a4d2e 0%, #0f2818 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #4ade80;
+            font-size: 1.1rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 35px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #4ade80;
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+        }
+
+        .input-label {
+            display: block;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: 8px;
+            font-size: 1rem;
+        }
+
+        .input-hint {
+            display: block;
+            color: var(--gray-500);
+            font-size: 0.85rem;
+            margin-bottom: 10px;
+            font-style: italic;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--gray-200);
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: inherit;
+            background: var(--gray-50);
+            transition: all 0.2s;
+        }
+
+        input:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: #4ade80;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.1);
+        }
+
+        textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .three-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+        }
+
+        .option-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 10px;
+        }
+
+        .option-btn {
+            padding: 12px 16px;
+            border: 2px solid var(--gray-200);
+            border-radius: 8px;
+            background: var(--gray-50);
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .option-btn:hover {
+            border-color: #4ade80;
+            background: white;
+        }
+
+        .option-btn.selected {
+            border-color: #4ade80;
+            background: rgba(74, 222, 128, 0.1);
+            color: #1a4d2e;
+            font-weight: 600;
+        }
+
+        .rating-group {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .rating-btn {
+            width: 45px;
+            height: 45px;
+            border: 2px solid var(--gray-200);
+            border-radius: 8px;
+            background: var(--gray-50);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 600;
+            color: var(--gray-500);
+        }
+
+        .rating-btn:hover {
+            border-color: #4ade80;
+            background: white;
+        }
+
+        .rating-btn.selected {
+            border-color: #4ade80;
+            background: #4ade80;
+            color: white;
+        }
+
+        .btn {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.05rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #000000, #4ade80);
+            color: white;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(74, 222, 128, 0.3);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px;
+            color: white;
+        }
+
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.2);
+            border-top-color: #4ade80;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Review Output Styles */
+        .review-header {
+            background: linear-gradient(135deg, #000000, #4ade80);
+            color: white;
+            padding: 35px;
+            border-radius: 12px 12px 0 0;
+            text-align: center;
+        }
+
+        .review-header h2 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+
+        .match-info {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .review-content {
+            background: white;
+            padding: 35px;
+            border-radius: 0 0 12px 12px;
+        }
+
+        .review-section {
+            margin-bottom: 30px;
+            padding-bottom: 25px;
+            border-bottom: 2px solid #f3f4f6;
+        }
+
+        .review-section:last-child {
+            border-bottom: none;
+        }
+
+        .review-section h3 {
+            color: #1a4d2e;
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .review-section p {
+            color: var(--gray-500);
+            line-height: 1.7;
+            margin-bottom: 12px;
+        }
+
+        .review-section ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .review-section li {
+            padding: 10px 15px;
+            padding-left: 35px;
+            position: relative;
+            margin-bottom: 8px;
+            background: var(--gray-50);
+            border-radius: 6px;
+            color: var(--gray-900);
+        }
+
+        .review-section li::before {
+            content: '▸';
+            position: absolute;
+            left: 15px;
+            color: #4ade80;
+            font-weight: 700;
+        }
+
+        .highlight-box {
+            background: #fef3c7;
+            border-left: 5px solid #fbbf24;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .highlight-box h4 {
+            color: #92400e;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .highlight-box p {
+            color: #78350f;
+        }
+
+        .success-box {
+            background: #f0fdf4;
+            border-left: 5px solid #22c55e;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .success-box h4 {
+            color: #166534;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .success-box p {
+            color: #15803d;
+        }
+
+        .challenge-box {
+            background: #fef2f2;
+            border-left: 5px solid #ef4444;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .challenge-box h4 {
+            color: #991b1b;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .challenge-box p {
+            color: #b91c1c;
+        }
+
+        .training-priorities {
+            background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+            border: 2px solid #3b82f6;
+            border-radius: 12px;
+            padding: 25px;
+            margin-top: 25px;
+        }
+
+        .training-priorities h3 {
+            color: #1e40af;
+            margin-bottom: 15px;
+        }
+
+        .priority-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            border-left: 4px solid #3b82f6;
+        }
+
+        .priority-item h4 {
+            color: #1e3a8a;
+            font-size: 1rem;
+            margin-bottom: 6px;
+        }
+
+        .priority-item p {
+            color: #1e40af;
+            font-size: 0.9rem;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 25px;
+        }
+
+        .btn-secondary {
+            background: #e5e7eb;
+            color: var(--gray-900);
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .btn-secondary:hover {
+            background: #d1d5db;
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .stat-card {
+            background: var(--gray-50);
+            border: 2px solid var(--gray-200);
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .stat-card .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1a4d2e;
+            margin-bottom: 5px;
+        }
+
+        .stat-card .stat-label {
+            color: var(--gray-500);
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .two-column, .three-column {
+                grid-template-columns: 1fr;
+            }
+            .match-info {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+            /* Print Styles */
+        @media print {
+            body {
+                background: white;
+                padding: 20px;
+            }
+            .btn, button {
+                display: none;
+            }
+            .card {
+                box-shadow: none;
+                border: 1px solid #ddd;
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="coachflow-dashboard.html" class="back-to-dashboard">
+        ← Back to Dashboard
+    </a>
+    <div class="container">
+        <div class="header">
+        <div style="background: rgba(74, 222, 128, 0.15); border-left: 4px solid #4ade80; padding: 15px; border-radius: 8px; margin: 20px auto; max-width: 900px; color: white;">
+            <strong>💡 Quick Tip:</strong> Review matches while they're fresh (Monday morning). This helps you stay objective and identify weekly training priorities.
+        </div>
+            <h1>📊 Game Review Tool</h1>
+            <p>Turn matches into learning moments</p>
+        </div>
+
+        <div id="reviewForm">
+            <!-- Match Context -->
+            <div class="card">
+                <div class="section-title">⚽ Match Information</div>
+                
+                <div class="two-column">
+                    <div class="input-group">
+                        <label class="input-label">Opponent</label>
+                        <input type="text" id="opponent" placeholder="e.g., City FC">
+                    </div>
+
+                    <div class="input-group">
+                        <label class="input-label">Final Score</label>
+                        <div style="display: flex; gap: 10px; align-items: center;">
+                            <input type="number" id="goalsFor" placeholder="Us" min="0" style="width: 70px;">
+                            <span style="font-size: 1.2rem; font-weight: 600;">-</span>
+                            <input type="number" id="goalsAgainst" placeholder="Them" min="0" style="width: 70px;">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="two-column">
+                    <div class="input-group">
+                        <label class="input-label">Location</label>
+                        <div class="option-group">
+                            <div class="option-btn" data-value="Home">Home</div>
+                            <div class="option-btn" data-value="Away">Away</div>
+                            <div class="option-btn" data-value="Neutral">Neutral</div>
+                        </div>
+                        <input type="hidden" id="location" value="">
+                    </div>
+
+                    <div class="input-group">
+                        <label class="input-label">Competition</label>
+                        <select id="competition">
+                            <option value="">Select...</option>
+                            <option value="League">League</option>
+                            <option value="Cup">Cup</option>
+                            <option value="Tournament">Tournament</option>
+                            <option value="Friendly">Friendly</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">Formation Used</label>
+                    <select id="formation">
+                        <option value="">Select formation...</option>
+                        <option value="4-3-3">4-3-3</option>
+                        <option value="4-2-3-1">4-2-3-1</option>
+                        <option value="4-4-2">4-4-2</option>
+                        <option value="3-5-2">3-5-2</option>
+                        <option value="3-4-3">3-4-3</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Performance Ratings -->
+            <div class="card">
+                <div class="section-title">⭐ Phase Ratings</div>
+                <span class="input-hint">Rate each phase of play from 1 (poor) to 5 (excellent)</span>
+                
+                <div class="input-group">
+                    <label class="input-label">In Possession</label>
+                    <div class="rating-group">
+                        <div class="rating-btn" data-phase="possession" data-value="1">1</div>
+                        <div class="rating-btn" data-phase="possession" data-value="2">2</div>
+                        <div class="rating-btn" data-phase="possession" data-value="3">3</div>
+                        <div class="rating-btn" data-phase="possession" data-value="4">4</div>
+                        <div class="rating-btn" data-phase="possession" data-value="5">5</div>
+                    </div>
+                    <input type="hidden" id="possessionRating" value="">
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">Out of Possession (Defending)</label>
+                    <div class="rating-group">
+                        <div class="rating-btn" data-phase="defending" data-value="1">1</div>
+                        <div class="rating-btn" data-phase="defending" data-value="2">2</div>
+                        <div class="rating-btn" data-phase="defending" data-value="3">3</div>
+                        <div class="rating-btn" data-phase="defending" data-value="4">4</div>
+                        <div class="rating-btn" data-phase="defending" data-value="5">5</div>
+                    </div>
+                    <input type="hidden" id="defendingRating" value="">
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">Transitions (Attack ↔ Defense)</label>
+                    <div class="rating-group">
+                        <div class="rating-btn" data-phase="transitions" data-value="1">1</div>
+                        <div class="rating-btn" data-phase="transitions" data-value="2">2</div>
+                        <div class="rating-btn" data-phase="transitions" data-value="3">3</div>
+                        <div class="rating-btn" data-phase="transitions" data-value="4">4</div>
+                        <div class="rating-btn" data-phase="transitions" data-value="5">5</div>
+                    </div>
+                    <input type="hidden" id="transitionsRating" value="">
+                </div>
+            </div>
+
+            <!-- What Went Well -->
+            <div class="card">
+                <div class="section-title">✅ What Went Well</div>
+                
+                <div class="input-group">
+                    <label class="input-label">Positives from the Match</label>
+                    <span class="input-hint">What did the team do well? Celebrate the successes.</span>
+                    <textarea id="positives" placeholder="e.g., Great pressing intensity in first half, excellent communication in defensive shape, creative movement in final third..."></textarea>
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">Key Moments (Goals, Saves, Plays)</label>
+                    <span class="input-hint">Specific moments that exemplified good play</span>
+                    <textarea id="keyMoments" placeholder="e.g., 23' - Counter-attack goal after winning ball high, 67' - Goalkeeper command on corner..."></textarea>
+                </div>
+            </div>
+
+            <!-- What Challenged Us -->
+            <div class="card">
+                <div class="section-title">⚠️ What Challenged Us</div>
+                
+                <div class="input-group">
+                    <label class="input-label">Areas of Difficulty</label>
+                    <span class="input-hint">What did we struggle with? Be specific.</span>
+                    <textarea id="challenges" placeholder="e.g., Struggled to play out under their high press, lost our shape when ball went wide, slow to react on transitions..."></textarea>
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">Opponent's Strengths</label>
+                    <span class="input-hint">What did they do well that caused us problems?</span>
+                    <textarea id="opponentStrengths" placeholder="e.g., Their pressing triggers were well-timed, quick wingers exposed space behind fullbacks..."></textarea>
+                </div>
+            </div>
+
+            <!-- Learning & Next Steps -->
+            <div class="card">
+                <div class="section-title">🎯 Learning & Next Steps</div>
+                
+                <div class="input-group">
+                    <label class="input-label">Primary Takeaway</label>
+                    <span class="input-hint">If we could only learn ONE thing from this match, what would it be?</span>
+                    <textarea id="primaryTakeaway" placeholder="e.g., We need to be more comfortable receiving under pressure in our defensive third..."></textarea>
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">Training Priorities This Week</label>
+                    <span class="input-hint">What do we need to work on in training? (We'll generate specific ideas)</span>
+                    <textarea id="trainingFocus" placeholder="e.g., Build-up patterns under pressure, defensive compactness, finishing in the box..."></textarea>
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">Individual Player Notes (Optional)</label>
+                    <span class="input-hint">Any standout performances or development needs?</span>
+                    <textarea id="playerNotes" placeholder="e.g., #7 excellent work rate, #10 needs to scan more, #3 showed great leadership..."></textarea>
+                </div>
+            </div>
+
+            <button class="btn btn-primary" id="generateBtn">⚡ Generate Game Review</button>
+        </div>
+
+        <div id="loading" class="loading hidden">
+            <div class="spinner"></div>
+            <p>Analyzing the match and generating review...</p>
+        </div>
+
+        <div id="reviewOutput" class="hidden">
+            <!-- Generated review will appear here -->
+        </div>
+    </div>
+
+    <script>
+        let inputs = {};
+
+        // Option button handlers
+        document.querySelectorAll('.option-btn').forEach(btn => {
+            btn.onclick = function() {
+                const group = this.parentElement;
+                const inputId = group.nextElementSibling.id;
+                
+                group.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+                this.classList.add('selected');
+                
+                document.getElementById(inputId).value = this.getAttribute('data-value');
+            };
+        });
+
+        // Rating button handlers
+        document.querySelectorAll('.rating-btn').forEach(btn => {
+            btn.onclick = function() {
+                const phase = this.getAttribute('data-phase');
+                const value = this.getAttribute('data-value');
+                const group = this.parentElement;
+                
+                group.querySelectorAll('.rating-btn').forEach(b => b.classList.remove('selected'));
+                this.classList.add('selected');
+                
+                document.getElementById(phase + 'Rating').value = value;
+            };
+        });
+
+        // Generate button
+        document.getElementById('generateBtn').onclick = function() {
+            // Collect inputs
+            inputs.opponent = document.getElementById('opponent').value;
+            inputs.goalsFor = document.getElementById('goalsFor').value;
+            inputs.goalsAgainst = document.getElementById('goalsAgainst').value;
+            inputs.location = document.getElementById('location').value;
+            inputs.competition = document.getElementById('competition').value;
+            inputs.formation = document.getElementById('formation').value;
+            
+            inputs.possessionRating = document.getElementById('possessionRating').value;
+            inputs.defendingRating = document.getElementById('defendingRating').value;
+            inputs.transitionsRating = document.getElementById('transitionsRating').value;
+            
+            inputs.positives = document.getElementById('positives').value;
+            inputs.keyMoments = document.getElementById('keyMoments').value;
+            inputs.challenges = document.getElementById('challenges').value;
+            inputs.opponentStrengths = document.getElementById('opponentStrengths').value;
+            inputs.primaryTakeaway = document.getElementById('primaryTakeaway').value;
+            inputs.trainingFocus = document.getElementById('trainingFocus').value;
+            inputs.playerNotes = document.getElementById('playerNotes').value;
+
+            // Validate
+            if (!inputs.opponent || !inputs.goalsFor || !inputs.goalsAgainst) {
+                alert('Please fill in opponent and score');
+                return;
+            }
+
+            if (!inputs.possessionRating || !inputs.defendingRating || !inputs.transitionsRating) {
+                alert('Please rate all three phases of play');
+                return;
+            }
+
+            // Show loading
+            document.getElementById('reviewForm').classList.add('hidden');
+            document.getElementById('loading').classList.remove('hidden');
+
+            // Generate review
+            setTimeout(() => {
+                generateReview();
+            }, 2000);
+        };
+
+        function generateReview() {
+            // Save to localStorage
+            const gameReviews = JSON.parse(localStorage.getItem("gameReviews") || "[]");
+            const result = data.goalsFor > data.goalsAgainst ? "Win" : data.goalsFor < data.goalsAgainst ? "Loss" : "Draw";
+            gameReviews.push({ opponent: data.opponent, result: result, date: new Date().toISOString() });
+            if (gameReviews.length > 20) gameReviews.shift();
+            localStorage.setItem("gameReviews", JSON.stringify(gameReviews));
+            const review = createReview(inputs);
+            document.getElementById('reviewOutput').innerHTML = review;
+            document.getElementById('loading').classList.add('hidden');
+            document.getElementById('reviewOutput').classList.remove('hidden');
+        }
+
+        function createReview(data) {
+            const result = data.goalsFor > data.goalsAgainst ? 'Win' : 
+                          data.goalsFor < data.goalsAgainst ? 'Loss' : 'Draw';
+            
+            const resultClass = result === 'Win' ? 'success-box' : 
+                               result === 'Loss' ? 'challenge-box' : 'highlight-box';
+
+            // Analyze ratings
+            const avgRating = ((parseInt(data.possessionRating) + parseInt(data.defendingRating) + parseInt(data.transitionsRating)) / 3).toFixed(1);
+            
+            const lowestPhase = getLowestRatedPhase(data);
+            const highestPhase = getHighestRatedPhase(data);
+
+            // Generate training priorities
+            const priorities = generateTrainingPriorities(data);
+
+            // Generate tactical summary
+            const tacticalSummary = generateTacticalSummary(data);
+
+            return `
+                <div class="card" style="padding: 0; overflow: hidden;">
+                    <div class="review-header">
+                        <h2>Match Review</h2>
+                        <div class="match-info">
+                            <div>🏆 ${data.competition}</div>
+                            <div>📍 ${data.location}</div>
+                            <div>📋 ${data.formation}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="review-content">
+                        <!-- Result -->
+                        <div class="${resultClass}">
+                            <h4>${result}: ${data.goalsFor} - ${data.goalsAgainst} vs ${data.opponent}</h4>
+                            <p>Overall Performance Rating: ${avgRating}/5.0</p>
+                        </div>
+
+                        <!-- Performance Stats -->
+                        <div class="stat-grid">
+                            <div class="stat-card">
+                                <div class="stat-value">${data.possessionRating}/5</div>
+                                <div class="stat-label">In Possession</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value">${data.defendingRating}/5</div>
+                                <div class="stat-label">Defending</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value">${data.transitionsRating}/5</div>
+                                <div class="stat-label">Transitions</div>
+                            </div>
+                        </div>
+
+                        <!-- Tactical Summary -->
+                        <div class="review-section">
+                            <h3>🧠 Tactical Summary</h3>
+                            <p>${tacticalSummary}</p>
+                        </div>
+
+                        <!-- What Went Well -->
+                        <div class="review-section">
+                            <h3>✅ What Went Well</h3>
+                            ${data.positives ? `<p><strong>Team Strengths:</strong> ${data.positives}</p>` : ''}
+                            ${data.keyMoments ? `
+                                <div class="success-box">
+                                    <h4>Key Moments</h4>
+                                    <p>${data.keyMoments}</p>
+                                </div>
+                            ` : ''}
+                            ${highestPhase.rating >= 4 ? `
+                                <p><strong>Highlight:</strong> ${highestPhase.phase} was a strength today (${highestPhase.rating}/5). ${highestPhase.comment}</p>
+                            ` : ''}
+                        </div>
+
+                        <!-- What Challenged Us -->
+                        <div class="review-section">
+                            <h3>⚠️ What Challenged Us</h3>
+                            ${data.challenges ? `<p><strong>Our Struggles:</strong> ${data.challenges}</p>` : ''}
+                            ${data.opponentStrengths ? `<p><strong>Opponent Effectiveness:</strong> ${data.opponentStrengths}</p>` : ''}
+                            ${lowestPhase.rating <= 2 ? `
+                                <div class="challenge-box">
+                                    <h4>Area Needing Immediate Attention</h4>
+                                    <p>${lowestPhase.phase} struggled today (${lowestPhase.rating}/5). ${lowestPhase.comment}</p>
+                                </div>
+                            ` : ''}
+                        </div>
+
+                        <!-- Primary Takeaway -->
+                        ${data.primaryTakeaway ? `
+                        <div class="review-section">
+                            <h3>💡 Primary Learning Point</h3>
+                            <div class="highlight-box">
+                                <h4>Key Takeaway for This Week</h4>
+                                <p>${data.primaryTakeaway}</p>
+                            </div>
+                        </div>
+                        ` : ''}
+
+                        <!-- Training Priorities -->
+                        <div class="training-priorities">
+                            <h3>📋 This Week's Training Priorities</h3>
+                            <p style="color: #1e40af; margin-bottom: 15px;">Based on the match analysis, here are the recommended training focuses:</p>
+                            ${priorities.map(p => `
+                                <div class="priority-item">
+                                    <h4>${p.title}</h4>
+                                    <p>${p.description}</p>
+                                </div>
+                            `).join('')}
+                            <p style="margin-top: 15px; color: #1e40af; font-size: 0.9rem;">
+                                💡 <strong>Tip:</strong> Use the Session Planner to create training activities for these priorities.
+                            </p>
+                        </div>
+
+                        <!-- Individual Notes -->
+                        ${data.playerNotes ? `
+                        <div class="review-section">
+                            <h3>👥 Player Notes</h3>
+                            <p>${data.playerNotes}</p>
+                            <p style="margin-top: 10px; color: var(--gray-500); font-size: 0.9rem;">
+                                💡 Consider creating Individual Development Plans for players who need targeted work.
+                            </p>
+                        </div>
+                        ` : ''}
+
+                        <!-- Questions for Players -->
+                        <div class="review-section">
+                            <h3>❓ Questions for Team Discussion</h3>
+                            <p style="margin-bottom: 12px;">Use these to engage players in reflection:</p>
+                            <ul>
+                                ${generateReflectionQuestions(data).map(q => `<li>${q}</li>`).join('')}
+                            </ul>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="action-buttons">
+                            <button class="btn btn-primary" onclick="downloadReview()">📥 Download</button>
+                            <button class="btn btn-secondary" onclick="window.print()" style="margin-left: 10px;">🖨️ Print Review</button>
+                            <button class="btn-secondary" onclick="openSessionPlanner()">📋 Create Training Session</button>
+                            <button class="btn-secondary" onclick="location.reload()">New Review</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function getLowestRatedPhase(data) {
+            const phases = {
+                possession: { phase: 'In Possession', rating: parseInt(data.possessionRating), comment: 'We need to work on our build-up play, decision-making, and execution in attack.' },
+                defending: { phase: 'Out of Possession', rating: parseInt(data.defendingRating), comment: 'Defensive organization, compactness, and individual defending need focus this week.' },
+                transitions: { phase: 'Transitions', rating: parseInt(data.transitionsRating), comment: 'Both attacking and defensive transitions need improvement—speed of play and decision-making are key.' }
+            };
+
+            return Object.values(phases).reduce((lowest, current) => 
+                current.rating < lowest.rating ? current : lowest
+            );
+        }
+
+        function getHighestRatedPhase(data) {
+            const phases = {
+                possession: { phase: 'In Possession', rating: parseInt(data.possessionRating), comment: 'Continue building on this strength while maintaining standards.' },
+                defending: { phase: 'Out of Possession', rating: parseInt(data.defendingRating), comment: 'Defensive solidity was evident—keep this intensity and organization.' },
+                transitions: { phase: 'Transitions', rating: parseInt(data.transitionsRating), comment: 'Great work transitioning between phases—this is a real asset.' }
+            };
+
+            return Object.values(phases).reduce((highest, current) => 
+                current.rating > highest.rating ? current : highest
+            );
+        }
+
+        function generateTacticalSummary(data) {
+            const result = data.goalsFor > data.goalsAgainst ? 'secured the win' : 
+                          data.goalsFor < data.goalsAgainst ? 'came up short' : 'earned a draw';
+            
+            const lowestPhase = getLowestRatedPhase(data);
+            const avgRating = ((parseInt(data.possessionRating) + parseInt(data.defendingRating) + parseInt(data.transitionsRating)) / 3).toFixed(1);
+            
+            let summary = `Playing in a ${data.formation} formation at ${data.location.toLowerCase()}, we ${result} against ${data.opponent} with a final score of ${data.goalsFor}-${data.goalsAgainst}. `;
+            
+            if (avgRating >= 4) {
+                summary += `Overall, this was a strong performance (${avgRating}/5.0) with consistent execution across all phases. `;
+            } else if (avgRating >= 3) {
+                summary += `The team showed moments of quality (${avgRating}/5.0), though consistency remains a focus area. `;
+            } else {
+                summary += `This was a challenging match (${avgRating}/5.0) that highlighted areas requiring immediate attention. `;
+            }
+
+            summary += `${lowestPhase.phase} (${lowestPhase.rating}/5) will be a key training priority this week.`;
+
+            return summary;
+        }
+
+        function generateTrainingPriorities(data) {
+            const priorities = [];
+            
+            // Based on lowest rating
+            const lowestPhase = getLowestRatedPhase(data);
+            
+            if (lowestPhase.phase === 'In Possession') {
+                priorities.push({
+                    title: '1. Possession Under Pressure',
+                    description: 'Focus on receiving, turning, and playing forward under opponent pressure. Rondos, positional games, and build-up patterns.'
+                });
+            } else if (lowestPhase.phase === 'Out of Possession') {
+                priorities.push({
+                    title: '1. Defensive Organization',
+                    description: 'Work on compactness, shifting as a unit, and communication. Defensive shape drills and pressing exercises.'
+                });
+            } else {
+                priorities.push({
+                    title: '1. Transition Speed & Decision-Making',
+                    description: 'Practice rapid transitions from defense to attack and attack to defense. Quick decision games and counter-attack scenarios.'
+                });
+            }
+
+            // Add specific challenges mentioned
+            if (data.trainingFocus) {
+                const focuses = data.trainingFocus.split(',').map(f => f.trim()).slice(0, 2);
+                focuses.forEach((focus, i) => {
+                    priorities.push({
+                        title: `${priorities.length + 1}. ${capitalizeFirst(focus)}`,
+                        description: `Address this specific challenge through targeted drills and game scenarios. Connect back to match situations.`
+                    });
+                });
+            }
+
+            // If still less than 3, add general priority
+            if (priorities.length < 3) {
+                priorities.push({
+                    title: `${priorities.length + 1}. Match Preparation`,
+                    description: 'Rehearse tactical scenarios and set pieces. Build confidence and sharpness for upcoming fixtures.'
+                });
+            }
+
+            return priorities.slice(0, 3); // Max 3 priorities
+        }
+
+        function generateReflectionQuestions(data) {
+            const questions = [];
+            const lowestPhase = getLowestRatedPhase(data);
+            
+            // Always include these
+            questions.push(`What did we do well today that we want to keep doing?`);
+            
+            // Phase-specific question
+            if (lowestPhase.phase === 'In Possession') {
+                questions.push(`When did we look most dangerous in attack? What made those moments work?`);
+            } else if (lowestPhase.phase === 'Out of Possession') {
+                questions.push(`When did we defend well as a team? What can we learn from those moments?`);
+            } else {
+                questions.push(`How quickly did we transition between attack and defense? Where can we improve?`);
+            }
+
+            // Result-based question
+            if (data.goalsFor > data.goalsAgainst) {
+                questions.push(`What separated us from the opponent today? How do we maintain this standard?`);
+            } else {
+                questions.push(`What would we do differently if we could play this game again?`);
+            }
+
+            return questions;
+        }
+
+        function capitalizeFirst(str) {
+            return str.charAt(0).toUpperCase() + str.slice(1);
+        }
+
+        function downloadReview() {
+            const content = document.getElementById('reviewOutput').innerHTML;
+            const html = `<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Game Review - ${inputs.opponent}</title>
+    <style>
+        .back-to-dashboard {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            color: #1a4d2e;
+            padding: 12px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .back-to-dashboard:hover {
+            background: #4ade80;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(74, 222, 128, 0.3);
+        }
+        :root {
+            --brand-red: #4ade80;
+            --brand-black: #1a4d2e;
+            --brand-white: #FFFFFF;
+            --gray-50: #F5F5F5;
+            --gray-200: #E0E0E0;
+            --gray-500: #808080;
+            --gray-900: #333333;
+            --dark-gray: #0f2818;
+        }
+
+        body { font-family: Arial, sans-serif; max-width: 900px; margin: 20px auto; padding: 20px; line-height: 1.6; }
+        h2, h3, h4 { color: #1a4d2e; }
+        .success-box, .challenge-box, .highlight-box { padding: 15px; margin: 15px 0; border-radius: 6px; }
+        .success-box { background: #f0fdf4; border-left: 4px solid #22c55e; }
+        .challenge-box { background: #fef2f2; border-left: 4px solid #ef4444; }
+        .highlight-box { background: #fef3c7; border-left: 4px solid #fbbf24; }
+        .training-priorities { background: #dbeafe; border: 2px solid #3b82f6; padding: 20px; border-radius: 8px; }
+        .priority-item { background: white; padding: 12px; margin: 10px 0; border-radius: 4px; }
+        ul { margin-left: 20px; }
+            /* Print Styles */
+        @media print {
+            body {
+                background: white;
+                padding: 20px;
+            }
+            .btn, button {
+                display: none;
+            }
+            .card {
+                box-shadow: none;
+                border: 1px solid #ddd;
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="coachflow-dashboard.html" class="back-to-dashboard">
+        ← Back to Dashboard
+    </a>
+    <div style="text-align: center; padding: 20px 0; border-bottom: 3px solid #4ade80; margin-bottom: 30px;">
+        <h1 style="color: #1a4d2e; margin-bottom: 5px;">⚽ COACHFLOW</h1>
+        <p style="color: #666; font-size: 0.9rem;">Where philosophy becomes performance</p>
+        <h2 style="margin-top: 15px;">Game Review</h2>
+    </div>
+    <p><strong>Date:</strong> ${new Date().toLocaleDateString()}</p>
+    <hr>
+    ${content}
+</body>
+</html>`;
+            
+            const blob = new Blob([html], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `game-review-${inputs.opponent.replace(/\s+/g, '-').toLowerCase()}.html`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function openSessionPlanner() {
+            // In a real app, this would pass data to Session Planner
+            const confirmed = confirm('This will open the Session Planner. Continue?');
+            if (confirmed) {
+                window.open('session-planner.html', '_blank');
+            }
+        }
+            function printPage() {
+            window.print();
+        }
+    </script>
+</body>
+</html>

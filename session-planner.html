@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Session Planner</title>
+    <style>
+        .back-to-dashboard {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            color: #1a4d2e;
+            padding: 12px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .back-to-dashboard:hover {
+            background: #4ade80;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(74, 222, 128, 0.3);
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            /* Brand Colors */
+            --brand-red: #4ade80;
+            --brand-black: #1a4d2e;
+            --brand-white: #FFFFFF;
+            
+            /* Functional Grays */
+            --gray-50: #F5F5F5;
+            --gray-200: #E0E0E0;
+            --gray-500: #808080;
+            --gray-900: #333333;
+            --dark-gray: #0f2818;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #1a4d2e 0%, #0f2818 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #4ade80;
+            font-size: 1.1rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 35px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #4ade80;
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+        }
+
+        .input-label {
+            display: block;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: 8px;
+            font-size: 1rem;
+        }
+
+        .input-hint {
+            display: block;
+            color: var(--gray-500);
+            font-size: 0.85rem;
+            margin-bottom: 10px;
+            font-style: italic;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--gray-200);
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: inherit;
+            background: var(--gray-50);
+            transition: all 0.2s;
+        }
+
+        input:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: #4ade80;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.1);
+        }
+
+        textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .option-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+        }
+
+        .option-btn {
+            padding: 12px 16px;
+            border: 2px solid var(--gray-200);
+            border-radius: 8px;
+            background: var(--gray-50);
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .option-btn:hover {
+            border-color: #4ade80;
+            background: white;
+        }
+
+        .option-btn.selected {
+            border-color: #4ade80;
+            background: rgba(74, 222, 128, 0.1);
+            color: #000000;
+            font-weight: 600;
+        }
+
+        .btn {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.05rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #000000, #4ade80);
+            color: white;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(74, 222, 128, 0.3);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px;
+            color: white;
+        }
+
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.2);
+            border-top-color: #4ade80;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Session Output Styles */
+        .session-header {
+            background: linear-gradient(135deg, #000000, #4ade80);
+            color: white;
+            padding: 30px;
+            border-radius: 12px 12px 0 0;
+            text-align: center;
+        }
+
+        .session-header h2 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .session-meta {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .session-content {
+            background: white;
+            padding: 35px;
+            border-radius: 0 0 12px 12px;
+        }
+
+        .session-objective {
+            background: #fef3c7;
+            border-left: 4px solid #fbbf24;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+
+        .session-objective h3 {
+            color: #92400e;
+            margin-bottom: 8px;
+            font-size: 1.1rem;
+        }
+
+        .session-objective p {
+            color: #78350f;
+            line-height: 1.6;
+            font-size: 1.05rem;
+        }
+
+        .activity {
+            background: var(--gray-50);
+            border: 2px solid var(--gray-200);
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+
+        .activity-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .activity-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #000000;
+        }
+
+        .activity-duration {
+            background: #4ade80;
+            color: white;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .activity-section {
+            margin-bottom: 18px;
+        }
+
+        .activity-section h4 {
+            color: var(--gray-900);
+            font-size: 1rem;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .activity-section p,
+        .activity-section li {
+            color: var(--gray-500);
+            line-height: 1.7;
+        }
+
+        .activity-section ul {
+            margin-left: 20px;
+        }
+
+        .activity-section li {
+            margin-bottom: 5px;
+        }
+
+        .coaching-cues {
+            background: #dbeafe;
+            border-left: 4px solid #3b82f6;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 15px;
+        }
+
+        .coaching-cues h4 {
+            color: #1e40af;
+        }
+
+        .variations {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .variation-box {
+            background: white;
+            border: 2px solid var(--gray-200);
+            padding: 12px;
+            border-radius: 6px;
+        }
+
+        .variation-box h5 {
+            color: #059669;
+            font-size: 0.9rem;
+            margin-bottom: 6px;
+        }
+
+        .variation-box.regression h5 {
+            color: #dc2626;
+        }
+
+        .variation-box p {
+            font-size: 0.9rem;
+        }
+
+        .connection-box {
+            background: #f0fdf4;
+            border: 2px solid #86efac;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 25px;
+        }
+
+        .connection-box h3 {
+            color: #166534;
+            margin-bottom: 12px;
+        }
+
+        .connection-box p {
+            color: #15803d;
+            line-height: 1.6;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 25px;
+        }
+
+        .btn-secondary {
+            background: #e5e7eb;
+            color: var(--gray-900);
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-secondary:hover {
+            background: #d1d5db;
+        }
+
+        @media (max-width: 768px) {
+            .variations {
+                grid-template-columns: 1fr;
+            }
+            .session-meta {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+            /* Print Styles */
+        @media print {
+            body {
+                background: white;
+                padding: 20px;
+            }
+            .btn, button {
+                display: none;
+            }
+            .card {
+                box-shadow: none;
+                border: 1px solid #ddd;
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="coachflow-dashboard.html" class="back-to-dashboard">
+        ← Back to Dashboard
+    </a>
+    <div class="container">
+        <div class="header">
+        <div style="background: rgba(74, 222, 128, 0.15); border-left: 4px solid #4ade80; padding: 15px; border-radius: 8px; margin: 20px auto; max-width: 900px; color: white;">
+            <strong>💡 Quick Tip:</strong> Generate a complete session in 3 minutes. Each session includes 4 activities with coaching points and progressions.
+        </div>
+            <h1>⚽ Session Planner</h1>
+            <p>Design training sessions aligned to your game model</p>
+        </div>
+
+        <div id="plannerForm">
+            <div class="card">
+                <div class="section-title">📅 Session Context</div>
+                
+                <div class="input-group">
+                    <label class="input-label">When's your next match?</label>
+                    <span class="input-hint">This helps determine session intensity</span>
+                    <div class="option-group">
+                        <div class="option-btn" data-value="MD+1">Day After Match</div>
+                        <div class="option-btn" data-value="MD-4">4 Days Before</div>
+                        <div class="option-btn" data-value="MD-3">3 Days Before</div>
+                        <div class="option-btn" data-value="MD-2">2 Days Before</div>
+                        <div class="option-btn" data-value="MD-1">Day Before</div>
+                    </div>
+                    <input type="hidden" id="matchDay" value="">
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">Session Duration</label>
+                    <select id="duration">
+                        <option value="">Select duration...</option>
+                        <option value="60">60 minutes</option>
+                        <option value="75">75 minutes</option>
+                        <option value="90">90 minutes</option>
+                        <option value="105">105 minutes</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">Number of Players</label>
+                    <input type="number" id="playerCount" placeholder="e.g., 16" min="8" max="30">
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="section-title">🎯 Training Focus</div>
+                
+                <div class="input-group">
+                    <label class="input-label">What do you want to work on?</label>
+                    <span class="input-hint">Pick the primary principle for this session</span>
+                    <select id="principle">
+                        <option value="">Select focus area...</option>
+                        <option value="Building Out">Building Out from the Back</option>
+                        <option value="Counter-Pressing">Counter-Pressing</option>
+                        <option value="Positional Play">Positional Play & Possession</option>
+                        <option value="Attacking Transitions">Attacking Transitions</option>
+                        <option value="Defensive Shape">Defensive Shape & Compactness</option>
+                        <option value="Pressing Triggers">Pressing Triggers</option>
+                        <option value="Wide Play">Wide Play & Crossing</option>
+                        <option value="Penetration">Through Balls & Penetration</option>
+                        <option value="Set Pieces">Set Piece Delivery</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">Physical Load Target</label>
+                    <div class="option-group">
+                        <div class="option-btn" data-value="Recovery">Recovery</div>
+                        <div class="option-btn" data-value="Moderate">Moderate</div>
+                        <div class="option-btn" data-value="High">High</div>
+                    </div>
+                    <input type="hidden" id="physicalLoad" value="">
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="section-title">📝 Additional Context (Optional)</div>
+                
+                <div class="input-group">
+                    <label class="input-label">Opponent Tendencies</label>
+                    <span class="input-hint">How does your next opponent typically play?</span>
+                    <textarea id="opponentNotes" placeholder="e.g., They press high with a 4-4-2, vulnerable on the counter..."></textarea>
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">Specific Challenges from Last Match</label>
+                    <span class="input-hint">What needs improvement?</span>
+                    <textarea id="challenges" placeholder="e.g., We struggled to play out under pressure..."></textarea>
+                </div>
+            </div>
+
+            <button class="btn btn-primary" id="generateBtn">⚡ Generate Training Session</button>
+        </div>
+
+        <div id="loading" class="loading hidden">
+            <div class="spinner"></div>
+            <p>Creating your training session...</p>
+        </div>
+
+        <div id="sessionOutput" class="hidden">
+            <!-- Generated session will appear here -->
+        </div>
+    </div>
+
+    <script>
+        let inputs = {};
+
+        // Option button handlers
+        document.querySelectorAll('.option-btn').forEach(btn => {
+            btn.onclick = function() {
+                const group = this.parentElement;
+                const inputId = group.nextElementSibling.id;
+                
+                group.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+                this.classList.add('selected');
+                
+                document.getElementById(inputId).value = this.getAttribute('data-value');
+            };
+        });
+
+        // Generate button
+        document.getElementById('generateBtn').onclick = function() {
+            // Collect inputs
+            inputs.matchDay = document.getElementById('matchDay').value;
+            inputs.duration = document.getElementById('duration').value;
+            inputs.playerCount = document.getElementById('playerCount').value;
+            inputs.principle = document.getElementById('principle').value;
+            inputs.physicalLoad = document.getElementById('physicalLoad').value;
+            inputs.opponentNotes = document.getElementById('opponentNotes').value;
+            inputs.challenges = document.getElementById('challenges').value;
+
+            // Validate
+            if (!inputs.matchDay || !inputs.duration || !inputs.playerCount || !inputs.principle || !inputs.physicalLoad) {
+                alert('Please fill in all required fields (match day, duration, player count, focus, and physical load)');
+                return;
+            }
+
+            // Show loading
+            document.getElementById('plannerForm').classList.add('hidden');
+            document.getElementById('loading').classList.remove('hidden');
+
+            // Generate session
+            setTimeout(() => {
+                generateSession();
+            }, 2000);
+        };
+
+        function generateSession() {
+            // Save to localStorage
+            const recentSessions = JSON.parse(localStorage.getItem("recentSessions") || "[]");
+            recentSessions.push({ principle: inputs.principle, date: new Date().toISOString() });
+            if (recentSessions.length > 10) recentSessions.shift();
+            localStorage.setItem("recentSessions", JSON.stringify(recentSessions));
+            const session = createSessionPlan(inputs);
+            document.getElementById('sessionOutput').innerHTML = session;
+            document.getElementById('loading').classList.add('hidden');
+            document.getElementById('sessionOutput').classList.remove('hidden');
+        }
+
+        function createSessionPlan(data) {
+            // Determine session objective based on inputs
+            let objective = `Develop ${data.principle.toLowerCase()} with ${data.physicalLoad.toLowerCase()} physical intensity`;
+            if (data.matchDay === 'MD-1') {
+                objective += ', focusing on tactical sharpness and game preparation';
+            } else if (data.matchDay === 'MD+1') {
+                objective += ', emphasizing recovery and technical quality';
+            }
+
+            // Create activities based on principle
+            const activities = generateActivities(data);
+
+            return `
+                <div class="card" style="padding: 0; overflow: hidden;">
+                    <div class="session-header">
+                        <h2>Training Session</h2>
+                        <div class="session-meta">
+                            <div class="meta-item">📅 ${data.matchDay}</div>
+                            <div class="meta-item">⏱️ ${data.duration} min</div>
+                            <div class="meta-item">👥 ${data.playerCount} players</div>
+                            <div class="meta-item">💪 ${data.physicalLoad} Load</div>
+                        </div>
+                    </div>
+                    
+                    <div class="session-content">
+                        <div class="session-objective">
+                            <h3>🎯 Session Objective</h3>
+                            <p>${objective}. ${data.challenges ? 'Addressing: ' + data.challenges : ''}</p>
+                        </div>
+
+                        ${activities}
+
+                        <div class="connection-box">
+                            <h3>🔗 Connection to Game Model</h3>
+                            <p><strong>Principle:</strong> ${data.principle}</p>
+                            <p>This session directly reinforces your game model by developing the technical and tactical behaviors needed to execute ${data.principle.toLowerCase()} in matches. ${data.opponentNotes ? 'Given that your opponent ' + data.opponentNotes.toLowerCase() + ', this work will be especially relevant.' : ''}</p>
+                        </div>
+
+                        <div class="action-buttons">
+                            <button class="btn btn-primary" onclick="downloadSession()">📥 Download</button>
+                            <button class="btn btn-secondary" onclick="window.print()" style="margin-left: 10px;">🖨️ Print Session Plan</button>
+                            <button class="btn-secondary" onclick="location.reload()">Create New Session</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function generateActivities(data) {
+            const totalTime = parseInt(data.duration);
+            const principle = data.principle;
+            
+            // Time allocations
+            const warmup = Math.round(totalTime * 0.15);
+            const technical = Math.round(totalTime * 0.25);
+            const game = Math.round(totalTime * 0.45);
+            const cooldown = totalTime - warmup - technical - game;
+
+            let activities = '';
+
+            // Activity 1: Warm-up
+            activities += createActivity({
+                number: 1,
+                title: getPrincipleWarmup(principle),
+                duration: warmup,
+                organization: `Full group. Use half field or appropriate space for ${data.playerCount} players.`,
+                description: `Dynamic movement combined with technical actions relevant to today's focus. Players work in pairs or small groups with constant movement.`,
+                constraints: [
+                    'All players moving constantly',
+                    'Quick transitions between exercises',
+                    'Integrate the ball early (5-7 minutes in)'
+                ],
+                coachingPoints: [
+                    'High energy and communication',
+                    'Quality of technical actions',
+                    'Proper movement patterns'
+                ],
+                progression: 'Add defensive pressure or decision-making',
+                regression: 'Slow tempo, increase space between players'
+            });
+
+            // Activity 2: Technical/Tactical Practice
+            activities += createActivity({
+                number: 2,
+                title: getPrincipleTechnicalActivity(principle),
+                duration: technical,
+                organization: getPrincipleOrganization(principle, data.playerCount),
+                description: getPrincipleDescription(principle),
+                constraints: getPrincipleConstraints(principle),
+                coachingPoints: getPrincipleCoachingPoints(principle),
+                progression: getPrincipleProgression(principle),
+                regression: 'Increase space, reduce pressure, allow more touches'
+            });
+
+            // Activity 3: Game-Related Practice
+            activities += createActivity({
+                number: 3,
+                title: getPrincipleGameActivity(principle),
+                duration: game,
+                organization: getGameOrganization(principle, data.playerCount),
+                description: `Game scenario that requires players to apply ${principle.toLowerCase()} under realistic pressure with transitions and decision-making.`,
+                constraints: getGameConstraints(principle),
+                coachingPoints: [
+                    'Recognition of when to apply the principle',
+                    'Speed of execution',
+                    'Communication and coordination',
+                    'Transition moments (both directions)'
+                ],
+                progression: 'Increase field size, add attacking/defending conditions, full-sided game',
+                regression: 'Reduce opposition, increase space, allow extra touches in build-up zones'
+            });
+
+            // Activity 4: Cool-down
+            activities += createActivity({
+                number: 4,
+                title: 'Cool-down & Reflection',
+                duration: cooldown,
+                organization: 'Full group together',
+                description: `Light movement, static stretching, and team reflection on today's focus: ${principle}.`,
+                constraints: [
+                    'Low intensity movement',
+                    'Focus on flexibility and recovery'
+                ],
+                coachingPoints: [
+                    'Ask players: What did we learn about ' + principle + '?',
+                    'Highlight 2-3 key moments from the session',
+                    'Connect to next match preparation'
+                ],
+                progression: null,
+                regression: null
+            });
+
+            return activities;
+        }
+
+        function createActivity(data) {
+            return `
+                <div class="activity">
+                    <div class="activity-header">
+                        <div class="activity-title">${data.number}. ${data.title}</div>
+                        <div class="activity-duration">${data.duration} min</div>
+                    </div>
+
+                    <div class="activity-section">
+                        <h4>📐 Organization</h4>
+                        <p>${data.organization}</p>
+                    </div>
+
+                    <div class="activity-section">
+                        <h4>📝 Description</h4>
+                        <p>${data.description}</p>
+                    </div>
+
+                    <div class="activity-section">
+                        <h4>⚙️ Key Constraints</h4>
+                        <ul>
+                            ${Array.isArray(data.constraints) ? data.constraints.map(c => `<li>${c}</li>`).join('') : `<li>${data.constraints}</li>`}
+                        </ul>
+                    </div>
+
+                    <div class="coaching-cues">
+                        <h4>💡 Coaching Points</h4>
+                        <ul>
+                            ${Array.isArray(data.coachingPoints) ? data.coachingPoints.map(c => `<li>${c}</li>`).join('') : `<li>${data.coachingPoints}</li>`}
+                        </ul>
+                    </div>
+
+                    ${data.progression ? `
+                    <div class="variations">
+                        <div class="variation-box">
+                            <h5>➕ Progression</h5>
+                            <p>${data.progression}</p>
+                        </div>
+                        <div class="variation-box regression">
+                            <h5>➖ Regression</h5>
+                            <p>${data.regression}</p>
+                        </div>
+                    </div>
+                    ` : ''}
+                </div>
+            `;
+        }
+
+        // Principle-specific content generators
+        function getPrincipleWarmup(principle) {
+            const warmups = {
+                'Building Out': 'Dynamic Passing & Movement',
+                'Counter-Pressing': 'High-Intensity Ball Circulation',
+                'Positional Play': 'Rondo with Movement',
+                'Attacking Transitions': 'Quick Transition Activation',
+                'Defensive Shape': 'Defensive Movement Patterns',
+                'Pressing Triggers': 'Press & Recover',
+                'Wide Play': 'Wide Service Warm-up',
+                'Penetration': 'Vertical Passing Activation',
+                'Set Pieces': 'Delivery & Movement Warm-up'
+            };
+            return warmups[principle] || 'Technical Warm-up';
+        }
+
+        function getPrincipleGameActivity(principle) {
+            const activities = {
+                'Building Out': 'Build-up Game with Pressing Zones',
+                'Counter-Pressing': 'Counter-Press Transition Game',
+                'Positional Play': 'Possession Game with End Zones',
+                'Attacking Transitions': 'Transition to Goal Game',
+                'Defensive Shape': 'Defensive Organization Game',
+                'Pressing Triggers': 'Pressing Game with Triggers',
+                'Wide Play': 'Wide Attack Game',
+                'Penetration': 'Penetration & Finishing Game',
+                'Set Pieces': 'Set Piece to Open Play Game'
+            };
+            return activities[principle] || 'Game-Related Practice';
+        }
+
+        function getPrincipleTechnicalActivity(principle) {
+            const activities = {
+                'Building Out': 'Build-up Patterns vs Pressure',
+                'Counter-Pressing': 'Counter-Press Positioning Game',
+                'Positional Play': 'Positional Rondo with Thirds',
+                'Attacking Transitions': 'Transition Boxes',
+                'Defensive Shape': 'Defensive Block Shifting',
+                'Pressing Triggers': 'Trigger Recognition & Press',
+                'Wide Play': 'Wide Combination Play',
+                'Penetration': 'Through Ball Timing',
+                'Set Pieces': 'Set Piece Delivery Practice'
+            };
+            return activities[principle] || 'Technical Practice';
+        }
+
+        function getPrincipleOrganization(principle, playerCount) {
+            if (principle.includes('Building Out') || principle.includes('Positional')) {
+                return `Rondo setup: 8v4 or 6v3 depending on numbers. 15x15 yard grid. Rotate every 2-3 minutes.`;
+            } else if (principle.includes('Counter-Press') || principle.includes('Press')) {
+                return `20x20 yard grid. Teams of 5-6. Possession team vs pressing team. Switch roles every 90 seconds.`;
+            } else if (principle.includes('Wide')) {
+                return `Half field width. Groups of 6-8 on each side. Focus on wide zones with overlapping runners.`;
+            }
+            return `Organized in groups of 6-8 players. Appropriate grid size based on focus and intensity.`;
+        }
+
+        function getPrincipleDescription(principle) {
+            const descriptions = {
+                'Building Out': 'Team works on playing out from the back against organized pressure. Goalkeeper, defenders, and midfielders practice creating numerical advantages and finding penetrating passes through pressing lines.',
+                'Counter-Pressing': 'Upon losing possession, nearest players immediately apply pressure to win the ball back within 5 seconds. Focus on body position, distance to ball, and coordinated pressure.',
+                'Positional Play': 'Possession-based exercise emphasizing positional spacing, support angles, and movement off the ball to create passing lanes through defensive lines.',
+                'Attacking Transitions': 'Practice rapid transitions from defense to attack. Focus on recognizing space, making quick decisions, and exploiting disorganized defenses.',
+                'Defensive Shape': 'Work on maintaining compact defensive shape while shifting horizontally and vertically based on ball location. Emphasis on distances between units.',
+                'Pressing Triggers': 'Recognition and execution of pressing triggers (bad touch, backward pass, predictable play). Practice coordinated team pressing from various triggers.',
+                'Wide Play': 'Combination play in wide areas leading to crosses, cutbacks, or switches. Focus on timing of overlapping runs and quality of delivery.',
+                'Penetration': 'Practice timing and weight of through balls combined with well-timed runs in behind. Develop understanding between passer and runner.',
+                'Set Pieces': 'Work on delivery quality, movement patterns, and finishing from set piece situations.'
+            };
+            return descriptions[principle] || 'Technical and tactical practice focused on today\'s principle.';
+        }
+
+        function getPrincipleConstraints(principle) {
+            const constraints = {
+                'Building Out': [
+                    'Must play through all three defenders before progressing',
+                    'Goalkeeper actively involved in build-up',
+                    'Max 2-3 touches in defensive third'
+                ],
+                'Counter-Pressing': [
+                    'Must apply pressure within 3 seconds of turnover',
+                    'Nearest 3 players engage immediately',
+                    'Win ball = bonus point'
+                ],
+                'Positional Play': [
+                    '2-touch limit',
+                    'Must create triangle support shapes',
+                    'Complete 10 passes = 1 point, penetrating pass through defense = 3 points'
+                ],
+                'Attacking Transitions': [
+                    'Score within 10 seconds of winning ball = double points',
+                    'Must advance ball forward immediately',
+                    'Use wide players when possible'
+                ],
+                'Defensive Shape': [
+                    'Maintain distances: no gaps larger than 10 yards between units',
+                    'Shift as a unit based on ball movement',
+                    'Force play to one side'
+                ],
+                'Pressing Triggers': [
+                    'Only press when trigger appears (coach calls it)',
+                    'All 6 players must shift forward together',
+                    'Trap opposition on sideline when possible'
+                ]
+            };
+            return constraints[principle] || ['Execute principle with quality', 'High communication', 'Quick decision-making'];
+        }
+
+        function getPrincipleCoachingPoints(principle) {
+            const points = {
+                'Building Out': [
+                    'Body shape open to receive',
+                    'Scan before receiving',
+                    'Quality of first touch (set yourself up)',
+                    'When to play forward vs when to recycle'
+                ],
+                'Counter-Pressing': [
+                    'Immediate reaction (no hesitation)',
+                    'Curved runs to cut off passing lanes',
+                    'Intensity and aggression',
+                    'Communication: "Press!" "Drop!" "Hold!"'
+                ],
+                'Positional Play': [
+                    'Positioning between the lines',
+                    'Third-man movement',
+                    'Weight and timing of passes',
+                    'Creating separation from markers'
+                ],
+                'Attacking Transitions': [
+                    'Lift your head immediately',
+                    'Attack empty space first',
+                    'Support runner must be ahead of the ball',
+                    'Finish the attack (don\'t slow down)'
+                ]
+            };
+            return points[principle] || ['Execution of technique', 'Decision-making speed', 'Communication'];
+        }
+
+        function getPrincipleProgression(principle) {
+            const progressions = {
+                'Building Out': 'Add an additional pressing player. Reduce space. Require progression within 8 passes',
+                'Counter-Pressing': 'Increase grid size (harder to press). Add time limit: must win back in 5 seconds',
+                'Positional Play': '1-touch only. Add neutral players. Smaller grid',
+                'Attacking Transitions': 'Reduce time to score. Add recovering defenders',
+                'Defensive Shape': 'Faster ball movement. Add attackers. Increase field width'
+            };
+            return progressions[principle] || 'Reduce time, reduce space, add opposition';
+        }
+
+        function getGameOrganization(principle, playerCount) {
+            const half = Math.floor(playerCount / 2);
+            return `${half}v${half} (or adjusted for equal teams). 60-70 yards long x 50 yards wide. Full goals with goalkeepers if available. Direction of play changes every 5 minutes.`;
+        }
+
+        function getGameConstraints(principle) {
+            const constraints = {
+                'Building Out': [
+                    'Goal only counts if all players were in attacking half',
+                    'Team must complete 5 passes starting from goalkeeper before shooting'
+                ],
+                'Counter-Pressing': [
+                    'Team that loses ball: if win back within 5 seconds = keep possession',
+                    'Immediate counter-press attempts = bonus point even if unsuccessful'
+                ],
+                'Positional Play': [
+                    'Complete 8+ passes before shooting = 2 goals',
+                    'All players must touch ball before goal = 3 goals'
+                ],
+                'Attacking Transitions': [
+                    'Score within 10 seconds of winning ball = 2 goals',
+                    'Score on first attack = 3 goals'
+                ],
+                'Wide Play': [
+                    'Goal from cross or cutback = 2 goals',
+                    'Must use wide zones before shooting'
+                ]
+            };
+            return constraints[principle] || ['Apply session focus to score', 'Quick transitions both ways'];
+        }
+
+        function downloadSession() {
+            const content = document.getElementById('sessionOutput').innerHTML;
+    </style>
+</head>
+<body>
+    <a href="coachflow-dashboard.html" class="back-to-dashboard">
+        ← Back to Dashboard
+    </a>
+    <div style="text-align: center; padding: 20px 0; border-bottom: 3px solid #4ade80; margin-bottom: 30px;">
+        <h1 style="color: #1a4d2e; margin-bottom: 5px;">⚽ COACHFLOW</h1>
+        <p style="color: #666; font-size: 0.9rem;">Where philosophy becomes performance</p>
+        <h2 style="margin-top: 15px;">Training Session Plan</h2>
+    </div>
+    <p><strong>Date:</strong> ${new Date().toLocaleDateString()}</p>
+    <p><strong>Generated by Session Planner</strong></p>
+    <hr>
+    ${content}
+</body>
+</html>`;
+            
+            const blob = new Blob([html], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `session-${inputs.principle.replace(/\s+/g, '-').toLowerCase()}.html`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+            function printPage() {
+            window.print();
+        }
+    </script>
+</body>
+</html>

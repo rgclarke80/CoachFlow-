@@ -1,0 +1,1641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Session Library</title>
+    <style>
+        .back-to-dashboard {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            color: #1a4d2e;
+            padding: 12px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .back-to-dashboard:hover {
+            background: #4ade80;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(74, 222, 128, 0.3);
+        }
+        :root {
+            --brand-red: #4ade80;
+            --brand-black: #1a4d2e;
+            --brand-white: #FFFFFF;
+            --gray-50: #F5F5F5;
+            --gray-200: #E0E0E0;
+            --gray-500: #808080;
+            --gray-900: #333333;
+            --dark-gray: #0f2818;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #1a4d2e 0%, #0f2818 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #4ade80;
+            font-size: 1.1rem;
+        }
+
+        /* Filters */
+        .filters {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .filter-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .filter-label {
+            font-weight: 600;
+            color: var(--gray-900);
+            font-size: 0.9rem;
+        }
+
+        select, input[type="text"] {
+            padding: 10px 14px;
+            border: 2px solid var(--gray-200);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            background: var(--gray-50);
+            transition: all 0.2s;
+        }
+
+        select:focus, input:focus {
+            outline: none;
+            border-color: #4ade80;
+            background: white;
+        }
+
+        .filter-tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+
+        .filter-tag {
+            background: #4ade80;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .filter-tag .remove {
+            cursor: pointer;
+            font-weight: 700;
+        }
+
+        .results-info {
+            color: var(--gray-500);
+            font-size: 0.9rem;
+            margin-top: 10px;
+        }
+
+        /* Activity Grid */
+        .activities-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .activity-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .activity-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .activity-header {
+            background: linear-gradient(135deg, #000000, #4ade80);
+            color: white;
+            padding: 20px;
+        }
+
+        .activity-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .activity-meta {
+            display: flex;
+            gap: 12px;
+            font-size: 0.85rem;
+            opacity: 0.95;
+            flex-wrap: wrap;
+        }
+
+        .activity-body {
+            padding: 20px;
+        }
+
+        .activity-description {
+            color: var(--gray-500);
+            line-height: 1.6;
+            margin-bottom: 15px;
+            font-size: 0.95rem;
+        }
+
+        .activity-tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        .tag {
+            background: var(--gray-50);
+            color: var(--gray-900);
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .tag.principle {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .tag.phase {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .tag.complexity {
+            background: #f0fdf4;
+            color: #166534;
+        }
+
+        .view-btn {
+            width: 100%;
+            padding: 10px;
+            background: var(--gray-50);
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            color: var(--gray-900);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .view-btn:hover {
+            background: #4ade80;
+            color: white;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 1000;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            max-width: 900px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .modal-close {
+            position: sticky;
+            top: 0;
+            right: 0;
+            float: right;
+            background: #e5e7eb;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.3rem;
+            color: var(--gray-900);
+            margin: 15px 15px 0 0;
+            z-index: 10;
+        }
+
+        .modal-close:hover {
+            background: #d1d5db;
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #000000, #4ade80);
+            color: white;
+            padding: 35px;
+            padding-top: 25px;
+            border-radius: 16px 16px 0 0;
+        }
+
+        .modal-header h2 {
+            font-size: 2rem;
+            margin-bottom: 12px;
+        }
+
+        .modal-body {
+            padding: 35px;
+        }
+
+        .detail-section {
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f3f4f6;
+        }
+
+        .detail-section:last-child {
+            border-bottom: none;
+        }
+
+        .detail-section h3 {
+            color: #1a4d2e;
+            margin-bottom: 12px;
+            font-size: 1.2rem;
+        }
+
+        .detail-section p {
+            color: var(--gray-500);
+            line-height: 1.7;
+            margin-bottom: 10px;
+        }
+
+        .detail-section ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .detail-section li {
+            color: var(--gray-900);
+            padding: 8px 0;
+            padding-left: 25px;
+            position: relative;
+        }
+
+        .detail-section li::before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            color: #4ade80;
+            font-weight: 700;
+        }
+
+        .organization-box {
+            background: var(--gray-50);
+            border: 2px solid var(--gray-200);
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .organization-box strong {
+            color: #1a4d2e;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 60px 20px;
+            color: white;
+        }
+
+        .no-results h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .filter-row {
+                grid-template-columns: 1fr;
+            }
+            .activities-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="coachflow-dashboard.html" class="back-to-dashboard">
+        ← Back to Dashboard
+    </a>
+    <div class="container">
+        <div class="header">
+        <div style="background: rgba(74, 222, 128, 0.15); border-left: 4px solid #4ade80; padding: 15px; border-radius: 8px; margin: 20px auto; max-width: 1400px; color: white;">
+            <strong>💡 Quick Tip:</strong> Browse 40+ professional drills. Use filters to find exactly what you need, then click for full details.
+        </div>
+            <h1>📚 Session Library</h1>
+            <p>Browse 40+ training activities organized by principle</p>
+        </div>
+
+        <!-- Filters -->
+        <div class="filters">
+            <div class="filter-row">
+                <div class="filter-group">
+                    <label class="filter-label">Search</label>
+                    <input type="text" id="searchInput" placeholder="Search activities...">
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Principle</label>
+                    <select id="principleFilter">
+                        <option value="">All Principles</option>
+                        <option value="Building Out">Building Out from Back</option>
+                        <option value="Possession">Possession & Control</option>
+                        <option value="Counter-Pressing">Counter-Pressing</option>
+                        <option value="Attacking Transitions">Attacking Transitions</option>
+                        <option value="Defensive Shape">Defensive Shape</option>
+                        <option value="Pressing">Pressing Triggers</option>
+                        <option value="Wide Play">Wide Play</option>
+                        <option value="Penetration">Penetration</option>
+                        <option value="Finishing">Finishing</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Phase</label>
+                    <select id="phaseFilter">
+                        <option value="">All Phases</option>
+                        <option value="In Possession">In Possession</option>
+                        <option value="Out of Possession">Out of Possession</option>
+                        <option value="Transition">Transition</option>
+                        <option value="Warmup">Warmup</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Complexity</label>
+                    <select id="complexityFilter">
+                        <option value="">All Levels</option>
+                        <option value="Simple">Simple</option>
+                        <option value="Medium">Medium</option>
+                        <option value="Complex">Complex</option>
+                    </select>
+                </div>
+            </div>
+            <div class="filter-tags" id="filterTags"></div>
+            <div class="results-info" id="resultsInfo"></div>
+        </div>
+
+        <!-- Activities Grid -->
+        <div class="activities-grid" id="activitiesGrid">
+            <!-- Activities will be rendered here -->
+        </div>
+
+        <div class="no-results hidden" id="noResults">
+            <h3>No activities found</h3>
+            <p>Try adjusting your filters</p>
+        </div>
+    </div>
+
+    <!-- Modal for Activity Details -->
+    <div class="modal" id="activityModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal()">×</button>
+            <div id="modalContent">
+                <!-- Activity details will be rendered here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Activities Database
+        const activities = [
+            {
+                id: 1,
+                title: "4v4+3 Positional Rondo",
+                principle: "Possession",
+                phase: "In Possession",
+                complexity: "Medium",
+                duration: "15-20 min",
+                players: "11",
+                description: "Teams maintain possession with support from neutral players. Focus on creating triangles and moving the ball quickly.",
+                organization: "20x20 yard grid. 4v4 with 3 neutral players who always play with the team in possession.",
+                rules: [
+                    "Neutrals limited to 2 touches",
+                    "Complete 8 passes = 1 point",
+                    "Switch teams every 2 minutes"
+                ],
+                coachingPoints: [
+                    "Body shape open to the field",
+                    "Constant movement to create passing lanes",
+                    "Play away from pressure",
+                    "Communication: call for the ball early"
+                ],
+                progression: "Reduce grid size, add 1-touch restriction for neutrals",
+                regression: "Increase grid size, allow more touches"
+            },
+            {
+                id: 2,
+                title: "Counter-Press Recovery Game",
+                principle: "Counter-Pressing",
+                phase: "Transition",
+                complexity: "Complex",
+                duration: "20-25 min",
+                players: "16-20",
+                description: "Upon losing the ball, immediate pressure to win it back within 5 seconds. Emphasizes reaction speed and coordinated pressing.",
+                organization: "Half field. 8v8. Team that loses possession must win ball back before opponents advance past midline.",
+                rules: [
+                    "Losing team has 5 seconds to win ball back or opponent gets bonus point",
+                    "If ball crosses midline, reset and switch possession",
+                    "Goals only count if scored within 10 seconds of winning ball"
+                ],
+                coachingPoints: [
+                    "Immediate reaction - no delay",
+                    "Nearest 3 players apply pressure",
+                    "Cut off forward passing options",
+                    "Aggressive body language and intensity"
+                ],
+                progression: "Reduce time limit to 4 seconds",
+                regression: "Increase field size, 6 second limit"
+            },
+            {
+                id: 3,
+                title: "Build-Up Pattern vs Press",
+                principle: "Building Out",
+                phase: "In Possession",
+                complexity: "Complex",
+                duration: "20 min",
+                players: "14-16",
+                description: "Practice specific build-up patterns from goalkeeper against organized pressing. Focus on timing, positioning, and decision-making under pressure.",
+                organization: "From penalty box to halfway line. GK + 4 defenders + 3 midfielders vs 5 pressing opponents.",
+                rules: [
+                    "Must start from goalkeeper",
+                    "All outfield players must touch ball before crossing halfway line = 3 points",
+                    "Score in small goals at halfway line = 1 point",
+                    "Defenders win ball = restart from their GK"
+                ],
+                coachingPoints: [
+                    "GK positioning to create passing angles",
+                    "Center backs split wide",
+                    "Midfielders drop to create numerical advantage",
+                    "Recognize when to play vs when to go long"
+                ],
+                progression: "Add extra pressing player, reduce space",
+                regression: "Fewer pressing players, more space"
+            },
+            {
+                id: 4,
+                title: "Transition Boxes",
+                principle: "Attacking Transitions",
+                phase: "Transition",
+                complexity: "Medium",
+                duration: "15-20 min",
+                players: "12-16",
+                description: "Fast-paced game emphasizing quick transition from defense to attack. Exploit space immediately after winning possession.",
+                organization: "40x30 yard grid divided into two zones. 4v4 in each zone. Cannot enter opposite zone.",
+                rules: [
+                    "When you win ball in your zone, must pass to teammates in attacking zone within 5 seconds",
+                    "Receiving team has 10 seconds to score in mini goals",
+                    "If defenders in attacking zone win ball, it goes back to their defensive zone"
+                ],
+                coachingPoints: [
+                    "Head up immediately after winning ball",
+                    "Support players sprint into space",
+                    "Quality of first forward pass",
+                    "Speed of execution"
+                ],
+                progression: "Reduce time limits, smaller goals",
+                regression: "Larger zones, more time"
+            },
+            {
+                id: 5,
+                title: "Defensive Block Shifting",
+                principle: "Defensive Shape",
+                phase: "Out of Possession",
+                complexity: "Medium",
+                duration: "20 min",
+                players: "14-18",
+                description: "Maintain compact defensive shape while shifting horizontally and vertically based on ball location. Emphasis on distances between units.",
+                organization: "Half field. 10 defenders vs 8 attackers (attackers can't shoot, only try to pull defense out of shape).",
+                rules: [
+                    "Defenders must maintain no more than 10 yards between units",
+                    "Coach calls 'freeze' - defenders must be compact or attackers get point",
+                    "If defenders win ball and get to halfway line = 1 point"
+                ],
+                coachingPoints: [
+                    "Move as a unit, not as individuals",
+                    "Communication: 'push up', 'drop', 'shift right'",
+                    "Maintain compactness: horizontal and vertical",
+                    "Recognize when to squeeze space vs when to drop"
+                ],
+                progression: "Attackers can shoot, add more attackers",
+                regression: "Allow more space between units, fewer attackers"
+            },
+            {
+                id: 6,
+                title: "Pressing Triggers Game",
+                principle: "Pressing",
+                phase: "Out of Possession",
+                complexity: "Medium",
+                duration: "20 min",
+                players: "14-18",
+                description: "Practice recognizing and executing pressing triggers. Team only presses when specific trigger occurs.",
+                organization: "Half field. 8v8. Coach designates triggers: bad touch, back pass, ball to specific zone.",
+                rules: [
+                    "Team can only press when coach calls 'trigger'",
+                    "If press wins ball within 5 seconds = bonus point",
+                    "If ball beats the press = attacking team gets bonus"
+                ],
+                coachingPoints: [
+                    "Recognize the trigger immediately",
+                    "Coordinated team movement forward",
+                    "Cut off passing lanes, not just ball carrier",
+                    "If press is beaten, recover shape quickly"
+                ],
+                progression: "Players identify triggers (coach doesn't call them)",
+                regression: "Fewer defenders, larger space"
+            },
+            {
+                id: 7,
+                title: "Wide Overload & Cross",
+                principle: "Wide Play",
+                phase: "In Possession",
+                complexity: "Medium",
+                duration: "15-20 min",
+                players: "12-16",
+                description: "Create overloads in wide areas and deliver quality crosses. Practice timing of runs and delivery.",
+                organization: "Wide zones (touchline to 18-yard box). 4v3 in wide zone, 4v4 in central box for crosses.",
+                rules: [
+                    "Must complete 3 passes in wide zone before crossing",
+                    "Goal from cross = 3 points, rebound finish = 1 point",
+                    "Defenders can clear but can't leave the box"
+                ],
+                coachingPoints: [
+                    "Timing of overlapping runs",
+                    "Quality of delivery (driven vs floated)",
+                    "Communication: 'hold', 'cross', 'cut back'",
+                    "Movement in the box: near post, far post, edge"
+                ],
+                progression: "3v3 in wide zone (harder), add goalkeeper",
+                regression: "5v3 in wide zone, bigger box"
+            },
+            {
+                id: 8,
+                title: "Through Ball & Run Timing",
+                principle: "Penetration",
+                phase: "In Possession",
+                complexity: "Medium",
+                duration: "15-20 min",
+                players: "12",
+                description: "Practice weight and timing of through balls with coordinated runs in behind. Focus on passer-runner connection.",
+                organization: "Three zones (defensive, middle, attacking). 4v3 in middle zone, lone striker in attacking zone.",
+                rules: [
+                    "Must play ball into striker's feet first",
+                    "Striker lays off to supporting runner",
+                    "Through ball must be played within 2 touches after layoff",
+                    "Runner must time run to stay onside"
+                ],
+                coachingPoints: [
+                    "Weight of through ball (firm, not soft)",
+                    "Communication between passer and runner",
+                    "Timing of run: too early = offside, too late = missed",
+                    "Disguise the pass with body shape"
+                ],
+                progression: "Add defender on striker, reduce touches",
+                regression: "No offside, more time on ball"
+            },
+            {
+                id: 9,
+                title: "Finishing Circuit",
+                principle: "Finishing",
+                phase: "In Possession",
+                complexity: "Simple",
+                duration: "15 min",
+                players: "Any",
+                description: "High-repetition finishing from various angles and situations. Emphasis on technique and placement over power.",
+                organization: "Three stations around penalty box. Rotate every 3 minutes.",
+                rules: [
+                    "Station 1: Through balls from edge of box",
+                    "Station 2: Crosses from wide (near/far post runs)",
+                    "Station 3: Cutbacks from byline",
+                    "Must use both feet at each station"
+                ],
+                coachingPoints: [
+                    "Pick your spot before shooting (placement over power)",
+                    "Head up, see the target",
+                    "Technique: side-foot for placement, laces for power",
+                    "Follow up every shot (rebounds)"
+                ],
+                progression: "Add goalkeeper, add defender, time pressure",
+                regression: "Static balls, more time"
+            },
+            {
+                id: 10,
+                title: "Dynamic Passing Warmup",
+                principle: "Possession",
+                phase: "Warmup",
+                complexity: "Simple",
+                duration: "10-12 min",
+                players: "Any",
+                description: "Constant movement passing drill to raise heart rate and sharpen passing technique.",
+                organization: "Partners or groups of 3-4. Spread across half field.",
+                rules: [
+                    "Pass and move (never stand still)",
+                    "After 5 minutes: one-touch only",
+                    "After 8 minutes: add turns before passing"
+                ],
+                coachingPoints: [
+                    "Weight and accuracy of pass",
+                    "Communicate (call for ball)",
+                    "Move into space after passing",
+                    "Quality over speed initially"
+                ],
+                progression: "Add balls (each pair has a ball), limit touches",
+                regression: "Walking pace, unlimited touches"
+            },
+            {
+                id: 11,
+                title: "1v1 to Goal",
+                principle: "Finishing",
+                phase: "In Possession",
+                complexity: "Simple",
+                duration: "12-15 min",
+                players: "8-12",
+                description: "Direct 1v1 situations practicing taking players on and finishing under pressure.",
+                organization: "From edge of penalty box to goal. Attacker starts with ball, defender 3 yards behind.",
+                rules: [
+                    "Attacker has 10 seconds to score",
+                    "Defender can challenge once ball is touched",
+                    "Rotate roles after each attempt"
+                ],
+                coachingPoints: [
+                    "Attack defender's weaker side if known",
+                    "Change of pace to create separation",
+                    "Protect the ball with body",
+                    "Finish across goalkeeper"
+                ],
+                progression: "Start with back to goal, 2 defenders",
+                regression: "Defender starts further back, no time limit"
+            },
+            {
+                id: 12,
+                title: "Possession Rondo 5v2",
+                principle: "Possession",
+                phase: "In Possession",
+                complexity: "Simple",
+                duration: "10-15 min",
+                players: "7+",
+                description: "Classic rondo for quick passing, movement, and decision-making. Foundation of possession play.",
+                organization: "15x15 yard grid. 5 players on outside, 2 in middle defending.",
+                rules: [
+                    "2 touch maximum",
+                    "If ball leaves grid or defenders win it, player who made mistake goes in middle",
+                    "Complete 10 passes = defenders do 5 push-ups"
+                ],
+                coachingPoints: [
+                    "Create angles for passer",
+                    "Receive across body to open up next pass",
+                    "Disguise passes",
+                    "Defenders: work together, cut passing lanes"
+                ],
+                progression: "1-touch only, smaller grid",
+                regression: "3-touch, larger grid, 5v1"
+            },
+            {
+                id: 13,
+                title: "High Press Activation",
+                principle: "Pressing",
+                phase: "Out of Possession",
+                complexity: "Complex",
+                duration: "20 min",
+                players: "18-22",
+                description: "Full team pressing from opponent's goal kicks. Practice coordinated high press with recovery runs.",
+                organization: "Full field. 11v11 or adapted numbers. Start with opponent goal kick.",
+                rules: [
+                    "Pressing team must force turnover in opponent's half = 2 points",
+                    "If ball escapes press, recover to mid-block",
+                    "If press wins ball and scores within 10 sec = 5 points"
+                ],
+                coachingPoints: [
+                    "Trigger: ball to center back",
+                    "First line cuts off central passes",
+                    "Second line closes space between lines",
+                    "Third line pushes up (squeeze space)",
+                    "If beaten, sprint recovery runs"
+                ],
+                progression: "Against better passers, less time to score after winning ball",
+                regression: "Press from midfield line instead of high"
+            },
+            {
+                id: 14,
+                title: "Transition Chaos",
+                principle: "Attacking Transitions",
+                phase: "Transition",
+                complexity: "Complex",
+                duration: "20 min",
+                players: "16-20",
+                description: "Continuous transitions with multiple balls. Chaotic but teaches rapid decision-making and transitions.",
+                organization: "40x30 yard grid. Two goals. 5v5 with extra balls around perimeter.",
+                rules: [
+                    "When ball goes out, coach throws new ball to opposite team",
+                    "Teams must transition immediately",
+                    "Every goal counts, no stoppages"
+                ],
+                coachingPoints: [
+                    "Scan constantly (where's the next ball?)",
+                    "Transition mentality: win ball = attack immediately",
+                    "Composure under chaos",
+                    "High work rate and intensity"
+                ],
+                progression: "Smaller grid, add neutral player",
+                regression: "Larger grid, pause between balls"
+            },
+            {
+                id: 15,
+                title: "Midfield Diamond Possession",
+                principle: "Possession",
+                phase: "In Possession",
+                complexity: "Medium",
+                duration: "15-20 min",
+                players: "12",
+                description: "Possession game emphasizing diamond shape in midfield. Teaches positioning and spacing.",
+                organization: "25x25 grid. 4 in diamond (possession team) vs 4 defenders, 4 supporting players on outside.",
+                rules: [
+                    "Diamond must maintain shape (coach checks distances)",
+                    "Outside players 1-touch only",
+                    "Complete 12 passes = 1 point, penetrating pass through diamond = 3 points"
+                ],
+                coachingPoints: [
+                    "Maintain diamond distances (12-15 yards)",
+                    "Top of diamond shows for ball between lines",
+                    "Base of diamond provides safety option",
+                    "Wide points create width"
+                ],
+                progression: "Add extra defender, reduce touches",
+                regression: "Fewer defenders, unlimited touches"
+            },
+            {
+                id: 16,
+                title: "Counter-Attack Speed Game",
+                principle: "Attacking Transitions",
+                phase: "Transition",
+                complexity: "Medium",
+                duration: "18-22 min",
+                players: "14-18",
+                description: "Practice rapid counter-attacks with numbers-up situations. Emphasis on speed and clinical finishing.",
+                organization: "From halfway line to goal. Defending team starts with ball in own half.",
+                rules: [
+                    "When attackers win ball, 3v2 or 4v3 to goal",
+                    "Must shoot within 12 seconds of winning ball",
+                    "Score = restart from halfway, miss = defending team keeps possession"
+                ],
+                coachingPoints: [
+                    "First pass forward and early",
+                    "Support runners at pace",
+                    "Take extra player out of play (don't slow down)",
+                    "Clinical finishing (don't waste advantage)"
+                ],
+                progression: "3v3 (even numbers), 10 second limit",
+                regression: "4v2 (bigger advantage), 15 seconds"
+            },
+            {
+                id: 17,
+                title: "Zone 14 Combination Play",
+                principle: "Penetration",
+                phase: "In Possession",
+                complexity: "Complex",
+                duration: "20 min",
+                players: "16",
+                description: "Combination play in and around the box (Zone 14). Practice give-and-go, third man runs, and quick interchanges.",
+                organization: "From halfway line to goal. Attacking 8v6. Highlight Zone 14 (central area outside box).",
+                rules: [
+                    "Must complete combination in Zone 14 before shooting (wall pass, overlap, etc.)",
+                    "Goal from Zone 14 combination = 3 points",
+                    "Direct goal = 1 point"
+                ],
+                coachingPoints: [
+                    "Movement off the ball creates space",
+                    "Quick 1-2 touch combinations",
+                    "Third man runs from deep",
+                    "Timing: too early = defender intercepts, too late = offside"
+                ],
+                progression: "Equal numbers (8v8), must be 1-touch in Zone 14",
+                regression: "6v4, unlimited touches"
+            },
+            {
+                id: 18,
+                title: "Low Block to Counter",
+                principle: "Defensive Shape",
+                phase: "Out of Possession",
+                complexity: "Medium",
+                duration: "20 min",
+                players: "16-20",
+                description: "Defend with low compact block, then counter-attack when ball is won.",
+                organization: "Defensive third to halfway. 8 defenders vs 10 attackers. Defending team has counter-attack target goals at halfway.",
+                rules: [
+                    "Defending team must stay in defensive third until they win ball",
+                    "When ball won, must hit target at halfway within 8 seconds = 2 points",
+                    "Attacking team scores in goal = 1 point"
+                ],
+                coachingPoints: [
+                    "Stay compact: deny space between lines",
+                    "Force play wide away from goal",
+                    "Patience: don't dive in unnecessarily",
+                    "When ball won: explode forward immediately"
+                ],
+                progression: "9v10 (one more defender), smaller defensive zone",
+                regression: "8v8, larger defensive zone"
+            },
+            {
+                id: 19,
+                title: "Wing Play Overload",
+                principle: "Wide Play",
+                phase: "In Possession",
+                complexity: "Medium",
+                duration: "18 min",
+                players: "14-16",
+                description: "Create numerical advantages in wide areas through movement and positioning.",
+                organization: "Wide channels (touchline to edge of box). 4v2 in wide zone, finishing players in box.",
+                rules: [
+                    "Wide team must complete 5 passes before crossing",
+                    "Different types of crosses: driven, floated, cutback (coach calls type)",
+                    "Defenders can't leave wide zone"
+                ],
+                coachingPoints: [
+                    "Fullback overlaps winger",
+                    "Midfielder supports from inside",
+                    "Quality of final ball (weight, height, location)",
+                    "Communication: 'hold', 'cross now', 'cut back'"
+                ],
+                progression: "3v2, must cross within 8 seconds",
+                regression: "5v2, unlimited time"
+            },
+            {
+                id: 20,
+                title: "Pressing Trap",
+                principle: "Pressing",
+                phase: "Out of Possession",
+                complexity: "Complex",
+                duration: "20 min",
+                players: "18-20",
+                description: "Set pressing traps to force opponents into specific areas where team can win ball.",
+                organization: "Half field. 9v9. Coach marks 'trap zones' (e.g., wide areas, near touchline).",
+                rules: [
+                    "Defending team tries to force play into trap zones",
+                    "Win ball in trap zone = 2 points",
+                    "Win ball elsewhere = 1 point",
+                    "Attacking team scores = 3 points"
+                ],
+                coachingPoints: [
+                    "Show opponent into trap (cut off better options)",
+                    "When they enter trap, spring it (coordinated press)",
+                    "Closest players pressure, others cut lanes",
+                    "Stay compact to prevent pass through lines"
+                ],
+                progression: "Smaller trap zones, better opposition",
+                regression: "Larger trap zones, passive opposition initially"
+            },
+            {
+                id: 21,
+                title: "GK + Back 4 Build Pattern",
+                principle: "Building Out",
+                phase: "In Possession",
+                complexity: "Medium",
+                duration: "15 min",
+                players: "10-12",
+                description: "Rehearse specific build-up patterns from back. GK and defenders work on positioning and passing under pressure.",
+                organization: "From goal to halfway. GK + 4 defenders vs 3-4 pressing opponents.",
+                rules: [
+                    "Must play through specific pattern (e.g., GK to RCB to RB to CM)",
+                    "Get ball to halfway line = success",
+                    "Pressing team wins ball = restart"
+                ],
+                coachingPoints: [
+                    "GK positioning creates angle",
+                    "CBs split wide initially",
+                    "Fullbacks push high when safe",
+                    "Escape valve: play long if needed"
+                ],
+                progression: "Add extra presser, specific patterns required",
+                regression: "Fewer pressers, no pattern requirement"
+            },
+            {
+                id: 22,
+                title: "Four Goal Transition Game",
+                principle: "Attacking Transitions",
+                phase: "Transition",
+                complexity: "Medium",
+                duration: "20 min",
+                players: "12-16",
+                description: "Constant transitions with four small goals. Encourages quick switches and exploiting space.",
+                organization: "40x30 grid with four small goals (one on each side). 6v6 or 7v7.",
+                rules: [
+                    "Score in any of the four goals",
+                    "When defending, must protect two goals (choose which two)",
+                    "After goal, team that conceded gets ball"
+                ],
+                coachingPoints: [
+                    "Scan to see which goals are open",
+                    "Switch play quickly",
+                    "Transition immediately (attack when you win it)",
+                    "Communication: 'switch!', 'other goal!'"
+                ],
+                progression: "2-touch limit, smaller grid",
+                regression: "Unlimited touches, larger grid"
+            },
+            {
+                id: 23,
+                title: "Finishing Under Fatigue",
+                principle: "Finishing",
+                phase: "In Possession",
+                complexity: "Medium",
+                duration: "15 min",
+                players: "10-16",
+                description: "High-intensity finishing while fatigued. Replicates end-of-game scenarios.",
+                organization: "Around penalty box. Pairs or groups of 3.",
+                rules: [
+                    "Sprint to cone and back (20 yards), receive ball, finish immediately",
+                    "10 repetitions each, rotate goalkeeper",
+                    "Track goals scored (personal best)"
+                ],
+                coachingPoints: [
+                    "Composure despite fatigue",
+                    "First touch sets up shot",
+                    "Placement over power when tired",
+                    "Mental toughness: demand quality every rep"
+                ],
+                progression: "Longer sprint, defender pressures from behind",
+                regression: "Shorter sprint, static ball"
+            },
+            {
+                id: 24,
+                title: "Shadow Defending",
+                principle: "Defensive Shape",
+                phase: "Out of Possession",
+                complexity: "Simple",
+                duration: "15 min",
+                players: "11+",
+                description: "Unopposed defensive movement drill. Team practices shifting and maintaining shape without opposition.",
+                organization: "Half field. Full back line + midfield line. Coach moves ball around, team reacts.",
+                rules: [
+                    "Coach passes ball to mannequins or cones placed around field",
+                    "Team shifts to ball, maintains distances",
+                    "Coach calls 'freeze' - check distances and positioning"
+                ],
+                coachingPoints: [
+                    "Stay compact: max 10-15 yards between players horizontally",
+                    "Shift together, not individually",
+                    "Communication constant",
+                    "Recognize when to push up vs drop"
+                ],
+                progression: "Add passive attacking players, coach plays ball to them",
+                regression: "Walk through it slowly, coach talks through each movement"
+            },
+            {
+                id: 25,
+                title: "Penetrating Pass Game",
+                principle: "Penetration",
+                phase: "In Possession",
+                complexity: "Medium",
+                duration: "18 min",
+                players: "14-16",
+                description: "Possession game where penetrating passes (splitting lines) earn bonus points.",
+                organization: "40x30 grid split into 3 horizontal zones. 7v7.",
+                rules: [
+                    "Normal goal = 1 point",
+                    "Pass that splits two zones (penetrates a line) = 1 point",
+                    "Pass that goes through all three zones = 3 points"
+                ],
+                coachingPoints: [
+                    "Recognize when to penetrate vs when to keep ball",
+                    "Weight of penetrating pass (must be firm)",
+                    "Movement off ball to receive between lines",
+                    "Don't force it: if it's not on, recycle"
+                ],
+                progression: "Smaller zones (harder to penetrate), more defenders",
+                regression: "Larger zones, fewer defenders"
+            },
+            {
+                id: 26,
+                title: "Set Piece Delivery Practice",
+                principle: "Wide Play",
+                phase: "In Possession",
+                complexity: "Simple",
+                duration: "12-15 min",
+                players: "8-12",
+                description: "Repetitions on corners, free kicks, and throw-ins. Focus on delivery quality.",
+                organization: "Around penalty box. Rotate takers and targets.",
+                rules: [
+                    "5 corners from each side",
+                    "5 free kicks from edge of box",
+                    "5 long throw-ins (if applicable)",
+                    "Track success rate"
+                ],
+                coachingPoints: [
+                    "Consistency of technique",
+                    "Target different areas: near post, far post, penalty spot",
+                    "Communication before delivery",
+                    "Movement timing for runners"
+                ],
+                progression: "Add goalkeeper, add defenders, pressure on taker",
+                regression: "No defenders, static targets"
+            },
+            {
+                id: 27,
+                title: "Box Overload Attack",
+                principle: "Finishing",
+                phase: "In Possession",
+                complexity: "Medium",
+                duration: "18 min",
+                players: "14-18",
+                description: "Create overloads in and around penalty box. Practice finishing with traffic and limited time.",
+                organization: "From edge of box to goal. 8v6 attacking, start with ball at top of box.",
+                rules: [
+                    "Attackers have 15 seconds to score",
+                    "Must have at least 4 players in box when shooting",
+                    "Defenders can clear but can't leave box"
+                ],
+                coachingPoints: [
+                    "Movement in box: create space for others",
+                    "Shoot low and hard in traffic",
+                    "Follow every shot (rebounds)",
+                    "Timing of runs: don't arrive too early"
+                ],
+                progression: "7v6 (less advantage), 12 second limit",
+                regression: "9v5, 20 seconds"
+            },
+            {
+                id: 28,
+                title: "Directional Possession",
+                principle: "Possession",
+                phase: "In Possession",
+                complexity: "Medium",
+                duration: "15-18 min",
+                players: "12-16",
+                description: "Possession with direction: must play toward target end zones to score.",
+                organization: "50x30 grid with 5-yard end zones at each end. 6v6.",
+                rules: [
+                    "Play ball into teammate in end zone = 1 point",
+                    "Teammate must receive and control in end zone",
+                    "Defending team can win ball and go other direction"
+                ],
+                coachingPoints: [
+                    "Possession with purpose (move toward end zone)",
+                    "Recognize when to play forward vs recycle",
+                    "Create depth: someone always in end zone",
+                    "Switch play to unbalance defense"
+                ],
+                progression: "Smaller end zones, 2-touch limit",
+                regression: "Larger end zones, unlimited touches"
+            },
+            {
+                id: 29,
+                title: "1-2 Combination Drill",
+                principle: "Penetration",
+                phase: "In Possession",
+                complexity: "Simple",
+                duration: "12 min",
+                players: "6-12",
+                description: "Quick 1-2 (wall pass) combinations in tight spaces. Foundation of penetrating play.",
+                organization: "Groups of 3. One plays as wall, two practice give-and-go.",
+                rules: [
+                    "Player 1 passes to wall, sprints around cone, receives return pass",
+                    "Wall must play 1-touch",
+                    "10 reps each, then rotate"
+                ],
+                coachingPoints: [
+                    "Weight of initial pass (firm, to feet)",
+                    "Timing of run (explode after passing)",
+                    "Wall player's body shape (open, ready)",
+                    "Return pass into space, not to feet"
+                ],
+                progression: "Add defender, add finish at end",
+                regression: "Walk through it, wall can take 2 touches"
+            },
+            {
+                id: 30,
+                title: "Recovery Run Conditioning",
+                principle: "Defensive Shape",
+                phase: "Out of Possession",
+                complexity: "Medium",
+                duration: "15 min",
+                players: "Any",
+                description: "Practice recovery runs when beaten. Builds fitness and defensive responsibility.",
+                organization: "From halfway to goal. Defender starts ahead, attacker gets ball and runs at goal.",
+                rules: [
+                    "Attacker has head start",
+                    "Defender must sprint back and either win ball or force attacker wide",
+                    "Rotate after each rep, 8-10 reps each"
+                ],
+                coachingPoints: [
+                    "Sprint at maximum intensity",
+                    "Angle of run (goal side, force wide)",
+                    "Don't dive in - stay on feet, delay",
+                    "Communication if working with other defenders"
+                ],
+                progression: "2v1 recovery, less head start",
+                regression: "Defender starts closer, walking pace initially"
+            },
+            {
+                id: 31,
+                title: "Quick Restart Set Pieces",
+                principle: "Attacking Transitions",
+                phase: "Transition",
+                complexity: "Medium",
+                duration: "12 min",
+                players: "14-18",
+                description: "Practice taking quick free kicks and throw-ins to catch defense unprepared.",
+                organization: "Various locations around field. Coach awards free kicks/throw-ins.",
+                rules: [
+                    "Team has 5 seconds to take free kick/throw-in before defenders can set",
+                    "Quick restart goal/assist = 3 points",
+                    "Normal play goal = 1 point"
+                ],
+                coachingPoints: [
+                    "Awareness: identify opportunity quickly",
+                    "Communication: 'quick!'",
+                    "Nearest player takes it immediately",
+                    "Simple: don't overcomplicate"
+                ],
+                progression: "Defenders react faster, 3 second limit",
+                regression: "7 seconds, passive defenders"
+            },
+            {
+                id: 32,
+                title: "Endline Press Trap",
+                principle: "Pressing",
+                phase: "Out of Possession",
+                complexity: "Medium",
+                duration: "18 min",
+                players: "14-16",
+                description: "Force opponents toward touchline/endline and trap them there.",
+                organization: "Half field. 7v7. Pressing team tries to trap opposition in wide areas near endline.",
+                rules: [
+                    "Win ball within 5 yards of touchline/endline = 2 points",
+                    "Force ball out of bounds = 1 point",
+                    "Opposition escapes trap and scores = 3 points"
+                ],
+                coachingPoints: [
+                    "Show them toward touchline (cut off central options)",
+                    "Curved pressing run to trap against line",
+                    "Support player seals off backward pass",
+                    "Aggressive when they're trapped (win it)"
+                ],
+                progression: "Against better technical players, larger field",
+                regression: "Narrower field (easier to trap), passive opposition"
+            },
+            {
+                id: 33,
+                title: "Overlap & Underlap Patterns",
+                principle: "Wide Play",
+                phase: "In Possession",
+                complexity: "Medium",
+                duration: "15 min",
+                players: "12",
+                description: "Practice overlapping and underlapping runs in wide areas. Build understanding between wingers and fullbacks.",
+                organization: "Wide channels. Groups of 3: winger, fullback, midfielder.",
+                rules: [
+                    "Winger starts with ball",
+                    "Fullback overlaps OR midfielder underlaps (call it)",
+                    "Must result in cross or cutback",
+                    "10 reps each variation"
+                ],
+                coachingPoints: [
+                    "Communication: 'over!' or 'under!'",
+                    "Timing: don't arrive too early or late",
+                    "Winger: drive at defender to create space",
+                    "Quality of final ball after run"
+                ],
+                progression: "Add defender, must beat defender before overlap",
+                regression: "No defender, walking pace"
+            },
+            {
+                id: 34,
+                title: "Scanning & Awareness Game",
+                principle: "Possession",
+                phase: "In Possession",
+                complexity: "Simple",
+                duration: "12 min",
+                players: "8-12",
+                description: "Exaggerated scanning drill to build habit of checking shoulders before receiving.",
+                organization: "15x15 grid. 6v3 possession. Coach holds up fingers behind defenders.",
+                rules: [
+                    "Before receiving ball, player must call out number coach is showing",
+                    "If they don't scan and call number = turnover",
+                    "Defenders try to win ball normally"
+                ],
+                coachingPoints: [
+                    "Scan BEFORE ball arrives",
+                    "Check both shoulders (full picture)",
+                    "Make scanning automatic (every time)",
+                    "Use information: know where pressure is"
+                ],
+                progression: "1-touch, coach changes numbers quickly",
+                regression: "2-touch, coach shows numbers longer"
+            },
+            {
+                id: 35,
+                title: "Compactness vs Width Game",
+                principle: "Defensive Shape",
+                phase: "Out of Possession",
+                complexity: "Complex",
+                duration: "20 min",
+                players: "18-20",
+                description: "Defensive team practices staying compact while covering width. Attackers try to exploit space.",
+                organization: "Full width of field, half length. 10v8 (attackers overloaded).",
+                rules: [
+                    "Defending team must keep no more than 25 yards width",
+                    "Coach calls 'check' - if defending team too wide, attackers get free goal",
+                    "If defenders win ball = point"
+                ],
+                coachingPoints: [
+                    "Stay compact centrally, force play wide",
+                    "When ball goes wide, shift as unit",
+                    "Far side stays tucked in (don't get stretched)",
+                    "Communication: constant adjustments"
+                ],
+                progression: "9v8 (less defensive advantage), narrower width requirement",
+                regression: "10v7, 30 yard width allowed"
+            },
+            {
+                id: 36,
+                title: "First Touch Mastery Circuit",
+                principle: "Possession",
+                phase: "Warmup",
+                complexity: "Simple",
+                duration: "10 min",
+                players: "Any",
+                description: "Focused first touch practice with various surfaces and directions.",
+                organization: "Pairs or small groups. Each pair has a ball.",
+                rules: [
+                    "2 min: Inside of foot, control forward",
+                    "2 min: Outside of foot, control to side",
+                    "2 min: Sole of foot, pull back and turn",
+                    "2 min: Thigh/chest, control and pass",
+                    "2 min: Weaker foot only"
+                ],
+                coachingPoints: [
+                    "Soft touch (cushion the ball)",
+                    "First touch into space (set yourself up)",
+                    "Body shape: stay on balls of feet",
+                    "Head up after controlling"
+                ],
+                progression: "Partner serves balls with variety, add pressure",
+                regression: "Self-service (drop ball to own feet)"
+            },
+            {
+                id: 37,
+                title: "Striker Movement Patterns",
+                principle: "Penetration",
+                phase: "In Possession",
+                complexity: "Medium",
+                duration: "15 min",
+                players: "8-12",
+                description: "Strikers practice various movement patterns: checking, spinning, peeling off.",
+                organization: "From halfway to goal. 2-3 strikers, midfielders serve balls.",
+                rules: [
+                    "5 reps each pattern: check to ball, spin in behind, peel to wide",
+                    "Midfielders vary service: feet, space, early ball",
+                    "Strikers finish after each movement"
+                ],
+                coachingPoints: [
+                    "Timing of movement (create separation from defender)",
+                    "Communication with passer",
+                    "First touch (if checking) or running angle (if spinning)",
+                    "Finish the move (every rep ends with shot)"
+                ],
+                progression: "Add defender, limit touches",
+                regression: "No defender, more time on ball"
+            },
+            {
+                id: 38,
+                title: "Transition to Defend",
+                principle: "Defensive Shape",
+                phase: "Transition",
+                complexity: "Medium",
+                duration: "18 min",
+                players: "14-18",
+                description: "Practice immediate transition from attack to defense when ball is lost.",
+                organization: "Half field. 8v8. Attacking team loses ball, must immediately transition to defend.",
+                rules: [
+                    "Team that loses ball: if they win it back within 5 seconds, keep playing",
+                    "If opposition scores within 10 seconds of turnover = 3 points (punish slow transition)",
+                    "Normal goal = 1 point"
+                ],
+                coachingPoints: [
+                    "Immediate reaction when ball is lost",
+                    "Closest 2-3 players delay (don't let them turn)",
+                    "Others sprint back to positions",
+                    "Communicate: 'recover!', 'press!'"
+                ],
+                progression: "3 second counter-press window, must win ball back or concede bonus",
+                regression: "7 second window, passive opposition initially"
+            },
+            {
+                id: 39,
+                title: "Channel Crossing Game",
+                principle: "Wide Play",
+                phase: "In Possession",
+                complexity: "Simple",
+                duration: "15 min",
+                players: "12-16",
+                description: "Continuous crossing practice from both sides with movement in box.",
+                organization: "Wide channels both sides, central box with goals. 3v2 in each wide zone, 4v4 in box.",
+                rules: [
+                    "Can only score from crosses or cutbacks",
+                    "Wide zones play 3v2 until delivery",
+                    "After cross/shot, switch to other side"
+                ],
+                coachingPoints: [
+                    "Quality of delivery (height, pace, location)",
+                    "Movement in box: timing of runs",
+                    "Near post, far post, penalty spot",
+                    "Attack the ball, don't wait for it"
+                ],
+                progression: "3v3 in wide zones, must cross within 5 seconds",
+                regression: "4v2 in wide zones, unlimited time"
+            },
+            {
+                id: 40,
+                title: "Possession Endurance",
+                principle: "Possession",
+                phase: "In Possession",
+                complexity: "Medium",
+                duration: "20 min",
+                players: "14-18",
+                description: "Extended possession game to build technical endurance and composure under fatigue.",
+                organization: "40x30 grid. 7v7. Continuous play, no stoppages.",
+                rules: [
+                    "Every 2 minutes of possession = 1 point",
+                    "If you lose ball, opponent gets possession",
+                    "Track total possession time for each team"
+                ],
+                coachingPoints: [
+                    "Composure when tired",
+                    "Don't force passes (keep it safe when fatigued)",
+                    "Constant movement even when tired",
+                    "Communication increases when energy decreases"
+                ],
+                progression: "Smaller grid, 2-touch limit when fatigued",
+                regression: "Larger grid, unlimited touches"
+            }
+        ];
+
+        // State
+        let filteredActivities = [...activities];
+        let activeFilters = {
+            search: '',
+            principle: '',
+            phase: '',
+            complexity: ''
+        };
+
+        // Initialize
+        renderActivities();
+        updateResultsInfo();
+
+        // Event Listeners
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            activeFilters.search = e.target.value.toLowerCase();
+            applyFilters();
+        });
+
+        document.getElementById('principleFilter').addEventListener('change', (e) => {
+            activeFilters.principle = e.target.value;
+            applyFilters();
+            updateFilterTags();
+        });
+
+        document.getElementById('phaseFilter').addEventListener('change', (e) => {
+            activeFilters.phase = e.target.value;
+            applyFilters();
+            updateFilterTags();
+        });
+
+        document.getElementById('complexityFilter').addEventListener('change', (e) => {
+            activeFilters.complexity = e.target.value;
+            applyFilters();
+            updateFilterTags();
+        });
+
+        function applyFilters() {
+            filteredActivities = activities.filter(activity => {
+                const matchesSearch = !activeFilters.search || 
+                    activity.title.toLowerCase().includes(activeFilters.search) ||
+                    activity.description.toLowerCase().includes(activeFilters.search);
+                
+                const matchesPrinciple = !activeFilters.principle || 
+                    activity.principle.includes(activeFilters.principle);
+                
+                const matchesPhase = !activeFilters.phase || 
+                    activity.phase === activeFilters.phase;
+                
+                const matchesComplexity = !activeFilters.complexity || 
+                    activity.complexity === activeFilters.complexity;
+                
+                return matchesSearch && matchesPrinciple && matchesPhase && matchesComplexity;
+            });
+
+            renderActivities();
+            updateResultsInfo();
+        }
+
+        function renderActivities() {
+            const grid = document.getElementById('activitiesGrid');
+            const noResults = document.getElementById('noResults');
+
+            if (filteredActivities.length === 0) {
+                grid.innerHTML = '';
+                noResults.classList.remove('hidden');
+                return;
+            }
+
+            noResults.classList.add('hidden');
+
+            grid.innerHTML = filteredActivities.map(activity => `
+                <div class="activity-card" onclick="showActivityDetail(${activity.id})">
+                    <div class="activity-header">
+                        <div class="activity-title">${activity.title}</div>
+                        <div class="activity-meta">
+                            <span>⏱️ ${activity.duration}</span>
+                            <span>👥 ${activity.players}</span>
+                        </div>
+                    </div>
+                    <div class="activity-body">
+                        <p class="activity-description">${activity.description}</p>
+                        <div class="activity-tags">
+                            <span class="tag principle">${activity.principle}</span>
+                            <span class="tag phase">${activity.phase}</span>
+                            <span class="tag complexity">${activity.complexity}</span>
+                        </div>
+                        <button class="view-btn">View Details →</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function showActivityDetail(id) {
+            const activity = activities.find(a => a.id === id);
+            const modal = document.getElementById('activityModal');
+            const content = document.getElementById('modalContent');
+
+            content.innerHTML = `
+                <div class="modal-header">
+                    <h2>${activity.title}</h2>
+                    <div class="activity-meta">
+                        <span>⏱️ ${activity.duration}</span>
+                        <span>👥 ${activity.players} players</span>
+                        <span>${activity.complexity}</span>
+                    </div>
+                </div>
+                <div class="modal-body">
+                    <div class="detail-section">
+                        <h3>📝 Description</h3>
+                        <p>${activity.description}</p>
+                        <div class="activity-tags" style="margin-top: 15px;">
+                            <span class="tag principle">${activity.principle}</span>
+                            <span class="tag phase">${activity.phase}</span>
+                        </div>
+                    </div>
+
+                    <div class="detail-section">
+                        <h3>📐 Organization</h3>
+                        <div class="organization-box">
+                            <p>${activity.organization}</p>
+                        </div>
+                    </div>
+
+                    <div class="detail-section">
+                        <h3>⚙️ Rules & Constraints</h3>
+                        <ul>
+                            ${activity.rules.map(rule => `<li>${rule}</li>`).join('')}
+                        </ul>
+                    </div>
+
+                    <div class="detail-section">
+                        <h3>💡 Coaching Points</h3>
+                        <ul>
+                            ${activity.coachingPoints.map(point => `<li>${point}</li>`).join('')}
+                        </ul>
+                    </div>
+
+                    <div class="detail-section">
+                        <h3>🔄 Progressions & Regressions</h3>
+                        <p><strong>Progression (make it harder):</strong> ${activity.progression}</p>
+                        <p><strong>Regression (make it easier):</strong> ${activity.regression}</p>
+                    </div>
+                </div>
+            `;
+
+            modal.classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('activityModal').classList.remove('active');
+        }
+
+        function updateFilterTags() {
+            const tagsContainer = document.getElementById('filterTags');
+            const tags = [];
+
+            if (activeFilters.principle) {
+                tags.push({ type: 'principle', value: activeFilters.principle });
+            }
+            if (activeFilters.phase) {
+                tags.push({ type: 'phase', value: activeFilters.phase });
+            }
+            if (activeFilters.complexity) {
+                tags.push({ type: 'complexity', value: activeFilters.complexity });
+            }
+
+            tagsContainer.innerHTML = tags.map(tag => `
+                <div class="filter-tag">
+                    ${tag.value}
+                    <span class="remove" onclick="removeFilter('${tag.type}')">×</span>
+                </div>
+            `).join('');
+        }
+
+        function removeFilter(type) {
+            activeFilters[type] = '';
+            document.getElementById(type + 'Filter').value = '';
+            applyFilters();
+            updateFilterTags();
+        }
+
+        function updateResultsInfo() {
+            const info = document.getElementById('resultsInfo');
+            info.textContent = `Showing ${filteredActivities.length} of ${activities.length} activities`;
+        }
+
+        // Close modal on background click
+        document.getElementById('activityModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>

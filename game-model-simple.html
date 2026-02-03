@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Model Builder</title>
+    <style>
+        .back-to-dashboard {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            color: #1a4d2e;
+            padding: 12px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .back-to-dashboard:hover {
+            background: #4ade80;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(74, 222, 128, 0.3);
+        }
+        :root {
+            --brand-red: #4ade80;
+            --brand-black: #1a4d2e;
+            --brand-white: #FFFFFF;
+            --gray-50: #F5F5F5;
+            --gray-200: #E0E0E0;
+            --gray-500: #808080;
+            --gray-900: #333333;
+            --dark-gray: #0f2818;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #1a4d2e 0%, #0f2818 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #4ade80;
+            font-size: 1.1rem;
+        }
+
+        .progress {
+            background: rgba(255, 255, 255, 0.1);
+            height: 8px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            background: linear-gradient(90deg, #4ade80, #fbbf24);
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 10px;
+        }
+
+        .phase-label {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .question-number {
+            display: inline-block;
+            background: linear-gradient(135deg, #000000, #4ade80);
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 35px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .question-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--gray-900);
+        }
+
+        .question-subtitle {
+            color: var(--gray-500);
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+            font-style: italic;
+        }
+
+        input[type="text"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--gray-200);
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: inherit;
+            background: var(--gray-50);
+            transition: all 0.2s;
+        }
+
+        input[type="text"]:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: #4ade80;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.1);
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .option {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            border: 2px solid var(--gray-200);
+            border-radius: 8px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            background: var(--gray-50);
+            transition: all 0.2s;
+        }
+
+        .option:hover {
+            border-color: #4ade80;
+            background: white;
+        }
+
+        .option.selected {
+            border-color: #4ade80;
+            background: rgba(74, 222, 128, 0.05);
+        }
+
+        .option input {
+            margin-right: 12px;
+            cursor: pointer;
+            width: 18px;
+            height: 18px;
+        }
+
+        .option label {
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 25px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #000000, #4ade80);
+            color: white;
+            flex: 1;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(74, 222, 128, 0.3);
+        }
+
+        .btn-secondary {
+            background: #e5e7eb;
+            color: var(--gray-900);
+        }
+
+        .btn-secondary:hover {
+            background: #d1d5db;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .summary {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .summary-header {
+            background: linear-gradient(135deg, #000000, #4ade80);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .summary-header h2 {
+            font-size: 2rem;
+            margin-bottom: 8px;
+        }
+
+        .summary-content {
+            padding: 30px;
+        }
+
+        .summary-section {
+            margin-bottom: 30px;
+            padding-bottom: 25px;
+            border-bottom: 2px solid #f3f4f6;
+        }
+
+        .summary-section:last-child {
+            border-bottom: none;
+        }
+
+        .summary-section h3 {
+            color: #1a4d2e;
+            font-size: 1.2rem;
+            margin-bottom: 12px;
+        }
+
+        .summary-section p {
+            color: var(--gray-900);
+            line-height: 1.7;
+            margin-bottom: 10px;
+        }
+
+        .summary-section ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .summary-section li {
+            padding-left: 20px;
+            position: relative;
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+
+        .summary-section li::before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            color: #4ade80;
+            font-weight: bold;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px;
+            color: white;
+        }
+
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.2);
+            border-top-color: #4ade80;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+            /* Print Styles */
+        @media print {
+            body {
+                background: white;
+                padding: 20px;
+            }
+            .btn, button {
+                display: none;
+            }
+            .card {
+                box-shadow: none;
+                border: 1px solid #ddd;
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="coachflow-dashboard.html" class="back-to-dashboard">
+        ← Back to Dashboard
+    </a>
+    <div class="container">
+        <div class="header">
+        <div style="background: rgba(74, 222, 128, 0.15); border-left: 4px solid #4ade80; padding: 15px; border-radius: 8px; margin: 20px auto; max-width: 800px; color: white;">
+            <strong>💡 Quick Tip:</strong> This takes about 10 minutes. Your game model becomes the foundation for all your sessions and player development plans.
+        </div>
+            <h1>⚽ Game Model Builder</h1>
+            <p>Build your coaching philosophy step by step</p>
+        </div>
+
+        <div class="progress">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+
+        <div class="phase-label" id="phaseLabel">Phase 1: Foundation</div>
+
+        <div id="questionCard"></div>
+
+        <div id="loading" class="loading hidden">
+            <div class="spinner"></div>
+            <p>Generating your game model...</p>
+        </div>
+
+        <div id="summary" class="hidden">
+            <div class="summary">
+                <div class="summary-header">
+                    <h2>Your Game Model</h2>
+                    <p>Ready to guide your coaching</p>
+                </div>
+                <div class="summary-content" id="summaryContent"></div>
+            </div>
+            <div style="text-align: center; margin-top: 20px;">
+                <button class="btn btn-primary" id="downloadBtn">📥 Download</button>
+                            <button class="btn btn-secondary" onclick="window.print()" style="margin-left: 10px;">🖨️ Print Game Model</button>
+                <button class="btn btn-secondary" id="restartBtn" style="margin-left: 10px;">Start Over</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                phase: 1,
+                id: 'identity',
+                title: 'What 3 words describe how you want your team to play?',
+                subtitle: 'Think about the feeling you want to create',
+                type: 'text',
+                placeholder: 'e.g., Aggressive, Technical, Creative'
+            },
+            {
+                phase: 1,
+                id: 'playing_well',
+                title: 'When your team plays well, what does it look like?',
+                subtitle: 'Paint a picture in 2-3 sentences',
+                type: 'textarea',
+                placeholder: 'Describe the movements and moments...'
+            },
+            {
+                phase: 1,
+                id: 'values',
+                title: "What's non-negotiable for your team?",
+                subtitle: 'Your core values',
+                type: 'textarea',
+                placeholder: 'e.g., Work rate, respect, commitment...'
+            },
+            {
+                phase: 1,
+                id: 'formation',
+                title: 'Primary formation',
+                type: 'select',
+                options: ['4-3-3', '4-2-3-1', '4-4-2', '3-5-2', '3-4-3', 'Flexible']
+            },
+            {
+                phase: 1,
+                id: 'level',
+                title: 'Age/Level',
+                type: 'select',
+                options: ['U10', 'U12', 'U14', 'U16', 'U18', 'College', 'Adult']
+            },
+            {
+                phase: 2,
+                id: 'build_up',
+                title: 'How do you build out of the back?',
+                subtitle: 'Select all that apply',
+                type: 'checkbox',
+                options: [
+                    'Short passing through lines',
+                    'Direct to forwards',
+                    'Wide through fullbacks',
+                    'Flexible based on pressure'
+                ]
+            },
+            {
+                phase: 2,
+                id: 'attack',
+                title: 'How do you create chances?',
+                subtitle: 'Select all that apply',
+                type: 'checkbox',
+                options: [
+                    'Wide play and crosses',
+                    'Through balls behind',
+                    'Combination play',
+                    'Set pieces',
+                    'Quick transitions'
+                ]
+            },
+            {
+                phase: 2,
+                id: 'lose_ball',
+                title: 'When you lose the ball, what happens?',
+                type: 'radio',
+                options: [
+                    'Immediate counter-press',
+                    'Retreat to shape',
+                    'Depends on location'
+                ]
+            },
+            {
+                phase: 3,
+                id: 'press',
+                title: 'Where do you defend?',
+                type: 'radio',
+                options: [
+                    'High press',
+                    'Mid-block',
+                    'Low block',
+                    'Variable'
+                ]
+            },
+            {
+                phase: 3,
+                id: 'defend_priority',
+                title: 'Defensive priority',
+                type: 'radio',
+                options: [
+                    'Compactness',
+                    'Deny space behind',
+                    'Win duels',
+                    'Force wide'
+                ]
+            },
+            {
+                phase: 4,
+                id: 'transition_attack',
+                title: 'Win the ball → what next?',
+                type: 'radio',
+                options: [
+                    'Attack quickly',
+                    'Keep possession',
+                    'Mix of both'
+                ]
+            },
+            {
+                phase: 4,
+                id: 'transition_defend',
+                title: 'Lose the ball → what next?',
+                type: 'radio',
+                options: [
+                    'Win it back immediately',
+                    'Get organized',
+                    'Depends where'
+                ]
+            },
+            {
+                phase: 5,
+                id: 'player_qualities',
+                title: 'What qualities do you value most?',
+                subtitle: 'Select all that apply',
+                type: 'checkbox',
+                options: [
+                    'Technical skill',
+                    'Decision-making',
+                    'Work rate',
+                    'Creativity',
+                    'Leadership',
+                    'Tactical understanding'
+                ]
+            },
+            {
+                phase: 5,
+                id: 'success',
+                title: 'What does success look like this season?',
+                type: 'textarea',
+                placeholder: 'Think beyond just wins...'
+            }
+        ];
+
+        let currentIndex = 0;
+        let answers = {};
+        const phases = ['Foundation', 'In Possession', 'Out of Possession', 'Transition', 'Development'];
+
+        function renderQuestion() {
+            const q = questions[currentIndex];
+            const card = document.getElementById('questionCard');
+            
+            let inputHTML = '';
+            
+            if (q.type === 'text') {
+                inputHTML = `<input type="text" id="input" placeholder="${q.placeholder || ''}" value="${answers[q.id] || ''}">`;
+            } else if (q.type === 'textarea') {
+                inputHTML = `<textarea id="input" placeholder="${q.placeholder || ''}">${answers[q.id] || ''}</textarea>`;
+            } else if (q.type === 'select') {
+                inputHTML = `<select id="input">
+                    <option value="">Select...</option>
+                    ${q.options.map(opt => `<option value="${opt}" ${answers[q.id] === opt ? 'selected' : ''}>${opt}</option>`).join('')}
+                </select>`;
+            } else if (q.type === 'checkbox') {
+                const saved = answers[q.id] || [];
+                inputHTML = `<div id="options">
+                    ${q.options.map((opt, i) => `
+                        <div class="option ${saved.includes(opt) ? 'selected' : ''}" data-value="${opt}">
+                            <input type="checkbox" id="cb${i}" value="${opt}" ${saved.includes(opt) ? 'checked' : ''}>
+                            <label for="cb${i}">${opt}</label>
+                        </div>
+                    `).join('')}
+                </div>`;
+            } else if (q.type === 'radio') {
+                inputHTML = `<div id="options">
+                    ${q.options.map((opt, i) => `
+                        <div class="option ${answers[q.id] === opt ? 'selected' : ''}" data-value="${opt}">
+                            <input type="radio" name="radio" id="r${i}" value="${opt}" ${answers[q.id] === opt ? 'checked' : ''}>
+                            <label for="r${i}">${opt}</label>
+                        </div>
+                    `).join('')}
+                </div>`;
+            }
+            
+            card.innerHTML = `
+                <div class="card">
+                    <div class="question-number">${currentIndex + 1}</div>
+                    <div class="question-title">${q.title}</div>
+                    ${q.subtitle ? `<div class="question-subtitle">${q.subtitle}</div>` : ''}
+                    ${inputHTML}
+                    <div class="buttons">
+                        ${currentIndex > 0 ? '<button class="btn btn-secondary" id="backBtn">← Back</button>' : ''}
+                        <button class="btn btn-primary" id="nextBtn">
+                            ${currentIndex < questions.length - 1 ? 'Next →' : 'Generate Model ⚡'}
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            // Update progress
+            const progress = ((currentIndex + 1) / questions.length) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+            document.getElementById('phaseLabel').textContent = `Phase ${q.phase}: ${phases[q.phase - 1]}`;
+            
+            // Add event listeners
+            const nextBtn = document.getElementById('nextBtn');
+            const backBtn = document.getElementById('backBtn');
+            
+            if (nextBtn) {
+                nextBtn.onclick = function() {
+                    saveAnswer();
+                    if (currentIndex < questions.length - 1) {
+                        currentIndex++;
+                        renderQuestion();
+                    } else {
+                        generateSummary();
+                    }
+                };
+            }
+            
+            if (backBtn) {
+                backBtn.onclick = function() {
+                    saveAnswer();
+                    currentIndex--;
+                    renderQuestion();
+                };
+            }
+            
+            // Handle option clicks
+            const options = document.querySelectorAll('.option');
+            options.forEach(option => {
+                option.onclick = function() {
+                    const input = this.querySelector('input');
+                    if (input.type === 'checkbox') {
+                        input.checked = !input.checked;
+                        this.classList.toggle('selected');
+                    } else if (input.type === 'radio') {
+                        options.forEach(o => o.classList.remove('selected'));
+                        input.checked = true;
+                        this.classList.add('selected');
+                    }
+                };
+            });
+        }
+
+        function saveAnswer() {
+            const q = questions[currentIndex];
+            
+            if (q.type === 'text' || q.type === 'textarea' || q.type === 'select') {
+                const input = document.getElementById('input');
+                answers[q.id] = input.value;
+            } else if (q.type === 'checkbox') {
+                const checked = Array.from(document.querySelectorAll('input[type="checkbox"]:checked'));
+                answers[q.id] = checked.map(cb => cb.value);
+            } else if (q.type === 'radio') {
+                const checked = document.querySelector('input[type="radio"]:checked');
+                answers[q.id] = checked ? checked.value : '';
+            }
+        }
+
+        function generateSummary() {
+            document.getElementById('questionCard').classList.add('hidden');
+            document.getElementById('loading').classList.remove('hidden');
+            
+            setTimeout(() => {
+                const html = createSummary();
+                document.getElementById('summaryContent').innerHTML = html;
+                document.getElementById('loading').classList.add('hidden');
+                document.getElementById('summary').classList.remove('hidden');
+            }, 1500);
+        }
+
+        function createSummary() {
+            const identity = answers.identity || 'Dynamic, Purposeful, United';
+            const formation = answers.formation || '4-3-3';
+            
+            // Build sections based on answers
+            let buildUp = 'flexible approach';
+            if (answers.build_up && answers.build_up.length > 0) {
+                buildUp = answers.build_up.join(', ').toLowerCase();
+            }
+            
+            let attacking = 'varied methods';
+            if (answers.attack && answers.attack.length > 0) {
+                attacking = answers.attack.join(', ').toLowerCase();
+            }
+            
+            const press = answers.press || 'adaptive defensive shape';
+            const defendPriority = answers.defend_priority || 'balanced defensive approach';
+            
+            return `
+                <div class="summary-section">
+                    <h3>⚡ IDENTITY</h3>
+                    <p><strong>We are: ${identity}</strong></p>
+                    <p>${answers.playing_well || 'We play with purpose, creating opportunities through movement and intelligent possession.'}</p>
+                    <p><strong>Core values:</strong> ${answers.values || 'Work rate, respect, and commitment to the team.'}</p>
+                </div>
+
+                <div class="summary-section">
+                    <h3>⚽ IN POSSESSION</h3>
+                    <p><strong>Build-up:</strong> ${buildUp}</p>
+                    <p><strong>Chance creation:</strong> ${attacking}</p>
+                    <p><strong>On turnover:</strong> ${answers.lose_ball || 'React based on situation'}</p>
+                </div>
+
+                <div class="summary-section">
+                    <h3>🛡️ OUT OF POSSESSION</h3>
+                    <p><strong>Defensive approach:</strong> ${press}</p>
+                    <p><strong>Priority:</strong> ${defendPriority}</p>
+                </div>
+
+                <div class="summary-section">
+                    <h3>🔄 TRANSITIONS</h3>
+                    <p><strong>Defense → Attack:</strong> ${answers.transition_attack || 'Balanced approach'}</p>
+                    <p><strong>Attack → Defense:</strong> ${answers.transition_defend || 'Situational response'}</p>
+                </div>
+
+                <div class="summary-section">
+                    <h3>📋 STRUCTURE</h3>
+                    <p><strong>Formation:</strong> ${formation}</p>
+                    <p><strong>Level:</strong> ${answers.level || 'Youth'}</p>
+                </div>
+
+                <div class="summary-section">
+                    <h3>👥 DEVELOPMENT</h3>
+                    <p><strong>Valued qualities:</strong> ${answers.player_qualities && answers.player_qualities.length > 0 ? answers.player_qualities.join(', ') : 'Technical skill, work rate, decision-making'}</p>
+                    <p><strong>Success:</strong> ${answers.success || 'Player development and competitive growth.'}</p>
+                </div>
+            `;
+        }
+
+        document.getElementById('downloadBtn').onclick = function() {
+            const content = document.getElementById('summaryContent').innerHTML;
+            const html = `<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Game Model - ${answers.identity || 'My Team'}</title>
+    <style>
+        .back-to-dashboard {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            color: #1a4d2e;
+            padding: 12px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .back-to-dashboard:hover {
+            background: #4ade80;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(74, 222, 128, 0.3);
+        }
+        :root {
+            --brand-red: #4ade80;
+            --brand-black: #1a4d2e;
+            --brand-white: #FFFFFF;
+            --gray-50: #F5F5F5;
+            --gray-200: #E0E0E0;
+            --gray-500: #808080;
+            --gray-900: #333333;
+            --dark-gray: #0f2818;
+        }
+
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 40px auto; padding: 20px; line-height: 1.6; }
+        h3 { color: #1a4d2e; margin-top: 25px; }
+            /* Print Styles */
+        @media print {
+            body {
+                background: white;
+                padding: 20px;
+            }
+            .btn, button {
+                display: none;
+            }
+            .card {
+                box-shadow: none;
+                border: 1px solid #ddd;
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="coachflow-dashboard.html" class="back-to-dashboard">
+        ← Back to Dashboard
+    </a>
+    <h1>⚽ Game Model: ${answers.identity || 'My Team'}</h1>
+    <p style="color: #666;">Generated ${new Date().toLocaleDateString()}</p>
+    <hr>
+    ${content}
+</body>
+</html>`;
+            
+            const blob = new Blob([html], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'game-model.html';
+            a.click();
+        };
+
+        document.getElementById('restartBtn').onclick = function() {
+            location.reload();
+        };
+
+        // Start
+        renderQuestion();
+            function printPage() {
+            window.print();
+        }
+    </script>
+</body>
+</html>

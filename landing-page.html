@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COACHFLOW - Transform Your Coaching in Minutes</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            /* Brand Colors */
+            --brand-red: #4ade80;
+            --brand-black: #1a4d2e;
+            --brand-white: #FFFFFF;
+            
+            /* Functional Grays */
+            --gray-50: #F5F5F5;
+            --gray-200: #E0E0E0;
+            --gray-500: #808080;
+            --gray-900: #333333;
+            --dark-gray: #0f2818;
+        }
+
+        body {
+            font-family: 'Work Sans', sans-serif;
+            color: var(--gray-900);
+            background: var(--brand-white);
+            overflow-x: hidden;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: #1a4d2e;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 80%;
+            height: 180%;
+            background: radial-gradient(circle, rgba(74, 222, 128, 0.15) 0%, transparent 70%);
+            animation: pulse 8s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.3; }
+            50% { transform: scale(1.1); opacity: 0.5; }
+        }
+
+        .hero-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 60px 40px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-content {
+            max-width: 700px;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background: rgba(74, 222, 128, 0.15);
+            color: #4ade80;
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 30px;
+            border: 1px solid rgba(74, 222, 128, 0.3);
+            animation: slideDown 0.8s ease;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .hero h1 {
+            letter-spacing: 0.03em, sans-serif;
+            font-size: 4.5rem;
+            line-height: 1.1;
+            color: var(--brand-white);
+            margin-bottom: 30px;
+            animation: slideUp 0.8s ease 0.2s both;
+            letter-spacing: -0.02em;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .hero h1 .highlight {
+            color: #4ade80;
+            position: relative;
+            display: inline-block;
+        }
+
+        .hero h1 .highlight::after {
+            content: '';
+            position: absolute;
+            bottom: 8px;
+            left: 0;
+            right: 0;
+            height: 12px;
+            background: rgba(74, 222, 128, 0.2);
+            z-index: -1;
+        }
+
+        .hero-subtitle {
+            font-size: 1.4rem;
+            color: rgba(255, 255, 255, 0.9);
+            line-height: 1.6;
+            margin-bottom: 40px;
+            animation: slideUp 0.8s ease 0.4s both;
+        }
+
+        .cta-group {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            animation: slideUp 0.8s ease 0.6s both;
+        }
+
+        .btn {
+            padding: 18px 40px;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: #4ade80;
+            color: var(--brand-white);
+            box-shadow: 0 10px 30px rgba(74, 222, 128, 0.3);
+        }
+
+        .btn-primary:hover {
+            background: var(--brand-white);
+            color: #1a4d2e;
+            box-shadow: 0 15px 40px rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--brand-white);
+            border: 2px solid var(--gray-200);
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--brand-white);
+        }
+
+        /* Social Proof */
+        .social-proof {
+            margin-top: 60px;
+            animation: fadeIn 1s ease 0.8s both;
+        }
+
+        .social-proof-text {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+
+        .stats {
+            display: flex;
+            gap: 40px;
+            flex-wrap: wrap;
+        }
+
+        .stat {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #4ade80;
+            letter-spacing: 0.03em, sans-serif;
+        }
+
+        .stat-label {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.95rem;
+        }
+
+        /* Problem Section */
+        .problem-section {
+            padding: 120px 40px;
+            background: var(--brand-white);
+            position: relative;
+        }
+
+        .section-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 80px;
+        }
+
+        .section-label {
+            color: #4ade80;
+            font-weight: 700;
+            font-size: 0.9rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            letter-spacing: 0.03em, sans-serif;
+            font-size: 3rem;
+            line-height: 1.2;
+            color: #1a4d2e;
+            margin-bottom: 20px;
+        }
+
+        .section-subtitle {
+            font-size: 1.2rem;
+            color: var(--gray-500);
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .problems-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .problem-card {
+            background: var(--gray-50);
+            padding: 35px;
+            border-radius: 16px;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .problem-card:hover {
+            border-color: #d1d5db;
+            transform: translateY(-5px);
+        }
+
+        .problem-icon {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        .problem-card h3 {
+            font-size: 1.3rem;
+            color: #1a4d2e;
+            margin-bottom: 12px;
+            font-weight: 700;
+        }
+
+        .problem-card p {
+            color: var(--gray-500);
+            line-height: 1.7;
+        }
+
+        /* Tools Section */
+        .tools-section {
+            padding: 120px 40px;
+            background: var(--gray-50);
+        }
+
+        .tools-grid {
+            display: grid;
+            gap: 40px;
+            margin-top: 60px;
+        }
+
+        .tool-showcase {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+            background: var(--brand-white);
+            padding: 50px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
+        }
+
+        .tool-showcase:nth-child(even) {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .tool-showcase:nth-child(even) .tool-content {
+            order: 2;
+        }
+
+        .tool-showcase:nth-child(even) .tool-visual {
+            order: 1;
+        }
+
+        .tool-content h3 {
+            letter-spacing: 0.03em, sans-serif;
+            font-size: 2rem;
+            color: #1a4d2e;
+            margin-bottom: 20px;
+        }
+
+        .tool-description {
+            font-size: 1.1rem;
+            color: var(--gray-500);
+            line-height: 1.7;
+            margin-bottom: 25px;
+        }
+
+        .tool-features {
+            list-style: none;
+            margin-bottom: 30px;
+        }
+
+        .tool-features li {
+            padding: 12px 0;
+            padding-left: 35px;
+            position: relative;
+            color: var(--gray-900);
+            font-weight: 500;
+        }
+
+        .tool-features li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #4ade80;
+            font-weight: 700;
+            font-size: 1.3rem;
+        }
+
+        .tool-visual {
+            background: linear-gradient(135deg, #1a4d2e, #0f2818);
+            border-radius: 16px;
+            padding: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 300px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tool-visual::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 10px,
+                rgba(74, 222, 128, 0.05) 10px,
+                rgba(74, 222, 128, 0.05) 20px
+            );
+        }
+
+        .tool-visual-icon {
+            font-size: 8rem;
+            filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.3));
+        }
+
+        /* CTA Section */
+        .cta-section {
+            padding: 120px 40px;
+            background: #1a4d2e;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -20%;
+            width: 80%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(74, 222, 128, 0.15) 0%, transparent 70%);
+        }
+
+        .cta-container {
+            max-width: 900px;
+            margin: 0 auto;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .cta-container h2 {
+            letter-spacing: 0.03em, sans-serif;
+            font-size: 3.5rem;
+            color: var(--brand-white);
+            margin-bottom: 30px;
+            line-height: 1.2;
+        }
+
+        .cta-container p {
+            font-size: 1.3rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 50px;
+            line-height: 1.6;
+        }
+
+        /* Footer */
+        .footer {
+            background: #1a4d2e;
+            padding: 60px 40px 40px;
+            color: rgba(255, 255, 255, 0.6);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 60px;
+            margin-bottom: 40px;
+        }
+
+        .footer-brand h3 {
+            letter-spacing: 0.03em, sans-serif;
+            font-size: 1.5rem;
+            color: var(--brand-white);
+            margin-bottom: 15px;
+        }
+
+        .footer-brand p {
+            line-height: 1.7;
+        }
+
+        .footer-links h4 {
+            color: var(--brand-white);
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .footer-links ul {
+            list-style: none;
+        }
+
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.6);
+            text-decoration: none;
+            display: block;
+            padding: 8px 0;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: #4ade80;
+        }
+
+        .footer-bottom {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        /* Quote Ticker */
+        .quote-ticker {
+            background: rgba(74, 222, 128, 0.1);
+            border-left: 4px solid #4ade80;
+            padding: 20px 30px;
+            margin: 30px auto;
+            max-width: 800px;
+            border-radius: 8px;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .quote-content {
+            text-align: center;
+            color: white;
+        }
+
+        .quote-text {
+            font-size: 1.1rem;
+            font-style: italic;
+            line-height: 1.6;
+            margin-bottom: 8px;
+            opacity: 0;
+            animation: quoteFadeIn 1s ease-in forwards;
+        }
+
+        .quote-author {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            font-weight: 600;
+        }
+
+        @keyframes quoteFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Animations on scroll */
+        .fade-in-up {
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 0.8s ease forwards;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            opacity: 0;
+            animation: fadeIn 0.8s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .tool-showcase {
+                grid-template-columns: 1fr !important;
+            }
+
+            .tool-showcase:nth-child(even) .tool-content,
+            .tool-showcase:nth-child(even) .tool-visual {
+                order: 0;
+            }
+
+            .footer-content {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 3rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1.1rem;
+            }
+
+            .section-title {
+                font-size: 2.2rem;
+            }
+
+            .cta-container h2 {
+                font-size: 2.5rem;
+            }
+
+            .cta-group {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .stats {
+                justify-content: space-around;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-container">
+            <div class="hero-content">
+                <h1>
+                    <span class="highlight">COACHFLOW</span>
+                </h1>
+                <p class="hero-subtitle">
+                    Welcome to CoachFlow. Where philosophy becomes performance.
+                </p>
+                <p class="hero-subtitle" style="font-size: 1.1rem; margin-top: 10px; opacity: 0.95;">
+                    Build your philosophy, plan training, develop players—all in one place.
+                </p>
+                <div class="cta-group">
+                    <a href="coachflow-dashboard.html" class="btn btn-primary">
+                        Start Free Now →
+                    </a>
+                    <a href="#tools" class="btn btn-secondary">
+                        See How It Works
+                    </a>
+                </div>
+
+                <!-- Quote Ticker -->
+                <div class="quote-ticker">
+                    <div class="quote-content">
+                        <p class="quote-text" id="quoteText"></p>
+                        <p class="quote-author" id="quoteAuthor"></p>
+                    </div>
+                </div>
+
+                <div class="social-proof">
+                    <p class="social-proof-text">Complete coaching system from philosophy to performance</p>
+                    <div class="stats">
+                        <div class="stat">
+                            <div class="stat-number">30-45</div>
+                            <div class="stat-label">Minutes saved per session</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-number">7</div>
+                            <div class="stat-label">Integrated coaching tools</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-number">100%</div>
+                            <div class="stat-label">Free forever</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tools Section -->
+    <section class="tools-section" id="tools">
+        <div class="section-container">
+            <div class="section-header">
+                <div class="section-label">7 Integrated Tools</div>
+                <h2 class="section-title">Everything You Need. One System.</h2>
+                <p class="section-subtitle">
+                    From game model to match-day plans to player development—everything connects seamlessly.
+                </p>
+            </div>
+
+            <div class="tools-grid">
+                <!-- Tool 1 -->
+                <div class="tool-showcase">
+                    <div class="tool-content">
+                        <h3>🎯 Game Model Builder</h3>
+                        <p class="tool-description">
+                            Define your coaching philosophy in 10 minutes through a guided questionnaire. This becomes the foundation for everything else.
+                        </p>
+                        <ul class="tool-features">
+                            <li>Covers all phases: possession, defense, transitions</li>
+                            <li>AI generates core principles from your answers</li>
+                            <li>Downloadable reference document</li>
+                            <li>Feeds into all other tools</li>
+                        </ul>
+                    </div>
+                    <div class="tool-visual">
+                        <div class="tool-visual-icon">🎯</div>
+                    </div>
+                </div>
+
+                <!-- Tool 2 -->
+                <div class="tool-showcase">
+                    <div class="tool-content">
+                        <h3>📋 Session Planner</h3>
+                        <p class="tool-description">
+                            Generate complete training sessions in 3 minutes. Every session includes 4 progressive activities aligned to your principles.
+                        </p>
+                        <ul class="tool-features">
+                            <li>Match-day context awareness (MD-1, MD-2, etc.)</li>
+                            <li>Coaching points & teaching cues</li>
+                            <li>Progressions and regressions</li>
+                            <li>Saves 30-45 minutes per session</li>
+                        </ul>
+                    </div>
+                    <div class="tool-visual">
+                        <div class="tool-visual-icon">📋</div>
+                    </div>
+                </div>
+
+                <!-- Tool 3 -->
+                <div class="tool-showcase">
+                    <div class="tool-content">
+                        <h3>📚 Session Library</h3>
+                        <p class="tool-description">
+                            Browse 40+ professional training activities. Filter by principle, phase, or complexity to find exactly what you need.
+                        </p>
+                        <ul class="tool-features">
+                            <li>Full organization details for each drill</li>
+                            <li>Coaching points included</li>
+                            <li>Filter and search functionality</li>
+                            <li>Mix AI generation with manual selection</li>
+                        </ul>
+                    </div>
+                    <div class="tool-visual">
+                        <div class="tool-visual-icon">📚</div>
+                    </div>
+                </div>
+
+                <!-- Tool 4 -->
+                <div class="tool-showcase">
+                    <div class="tool-content">
+                        <h3>🎯 Match-Day Game Plan</h3>
+                        <p class="tool-description">
+                            Build complete pre-match game plans with objectives, tactics by phase, and opponent analysis. Perfect for team briefings.
+                        </p>
+                        <ul class="tool-features">
+                            <li>In/Out of possession strategies</li>
+                            <li>Transition game plans</li>
+                            <li>Opponent scouting report</li>
+                            <li>Print-ready team presentation</li>
+                        </ul>
+                    </div>
+                    <div class="tool-visual">
+                        <div class="tool-visual-icon">🎯</div>
+                    </div>
+                </div>
+
+                <!-- Tool 5 -->
+                <div class="tool-showcase">
+                    <div class="tool-content">
+                        <h3>📊 Game Review Tool</h3>
+                        <p class="tool-description">
+                            Transform post-match emotions into structured learning. Get 3 training priorities for the week ahead.
+                        </p>
+                        <ul class="tool-features">
+                            <li>Phase-by-phase performance ratings</li>
+                            <li>Structured reflection framework</li>
+                            <li>Auto-generated training priorities</li>
+                            <li>Links directly to Session Planner</li>
+                        </ul>
+                    </div>
+                    <div class="tool-visual">
+                        <div class="tool-visual-icon">📊</div>
+                    </div>
+                </div>
+
+                <!-- Tool 6 -->
+                <div class="tool-showcase">
+                    <div class="tool-content">
+                        <h3>👤 Individual Development Planner</h3>
+                        <p class="tool-description">
+                            Create personalized player plans with daily micro-habits, match cues, and progress checkpoints.
+                        </p>
+                        <ul class="tool-features">
+                            <li>2-3 focused development areas</li>
+                            <li>Daily actionable habits</li>
+                            <li>Match-day reminder cues</li>
+                            <li>Perfect for parent meetings & recruiting</li>
+                        </ul>
+                    </div>
+                    <div class="tool-visual">
+                        <div class="tool-visual-icon">👤</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="cta-container">
+            <h2>Ready to Coach Better?</h2>
+            <p>
+                Join coaches who are spending less time planning and more time coaching. 
+                100% free. No credit card. No catch.
+            </p>
+            <a href="coachflow-dashboard.html" class="btn btn-primary" style="font-size: 1.2rem;">
+                Start Using COACHFLOW Now →
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <h3>⚽ COACHFLOW</h3>
+                <p>
+                    Where philosophy becomes performance. Build your philosophy, plan training, develop players—all in one place.
+                </p>
+            </div>
+            <div class="footer-links">
+                <h4>Tools</h4>
+                <ul>
+                    <li><a href="game-model-simple.html">Game Model Builder</a></li>
+                    <li><a href="session-planner.html">Session Planner</a></li>
+                    <li><a href="session-library.html">Session Library</a></li>
+                    <li><a href="game-review-tool.html">Game Review</a></li>
+                    <li><a href="individual-development-planner.html">Player Development</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4>Resources</h4>
+                <ul>
+                    <li><a href="coachflow-dashboard.html">Dashboard</a></li>
+                    <li><a href="#tools">How It Works</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 COACHFLOW. Where philosophy becomes performance.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+
+        // Animate elements on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Observe all tool showcases and problem cards
+        document.querySelectorAll('.tool-showcase, .problem-card').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(30px)';
+            el.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
+            observer.observe(el);
+        });
+
+        // Quote Ticker - Rotating Coaching Quotes
+        const quotes = [
+            {
+                text: "Failing to prepare is preparing to fail.",
+                author: "John Wooden"
+            },
+            {
+                text: "The will to win is important, but the will to prepare is vital.",
+                author: "Joe Paterno"
+            },
+            {
+                text: "Give me six hours to chop down a tree and I will spend the first four sharpening the axe.",
+                author: "Abraham Lincoln"
+            },
+            {
+                text: "Plans are nothing; planning is everything.",
+                author: "Dwight D. Eisenhower"
+            },
+            {
+                text: "By failing to prepare, you are preparing to fail.",
+                author: "Benjamin Franklin"
+            },
+            {
+                text: "Good fortune is what happens when opportunity meets with planning.",
+                author: "Thomas Edison"
+            },
+            {
+                text: "A goal without a plan is just a wish.",
+                author: "Antoine de Saint-Exupéry"
+            },
+            {
+                text: "The time to repair the roof is when the sun is shining.",
+                author: "John F. Kennedy"
+            },
+            {
+                text: "It takes as much energy to wish as it does to plan.",
+                author: "Eleanor Roosevelt"
+            },
+            {
+                text: "Organization isn't about perfection; it's about efficiency.",
+                author: "Anonymous"
+            },
+            {
+                text: "Success depends upon previous preparation, and without such preparation there is sure to be failure.",
+                author: "Confucius"
+            },
+            {
+                text: "The best time to plant a tree was 20 years ago. The second best time is now.",
+                author: "Chinese Proverb"
+            },
+            {
+                text: "Before anything else, preparation is the key to success.",
+                author: "Alexander Graham Bell"
+            },
+            {
+                text: "An hour of planning can save you 10 hours of doing.",
+                author: "Dale Carnegie"
+            },
+            {
+                text: "If you don't know where you are going, you'll end up someplace else.",
+                author: "Yogi Berra"
+            }
+        ];
+
+        // Display random quote on page load
+        function displayRandomQuote() {
+            const randomIndex = Math.floor(Math.random() * quotes.length);
+            const quote = quotes[randomIndex];
+            
+            const quoteText = document.getElementById('quoteText');
+            const quoteAuthor = document.getElementById('quoteAuthor');
+            
+            if (quoteText && quoteAuthor) {
+                quoteText.textContent = `"${quote.text}"`;
+                quoteAuthor.textContent = `— ${quote.author}`;
+            }
+        }
+
+        // Display quote on page load
+        displayRandomQuote();
+    </script>
+</body>
+</html>
