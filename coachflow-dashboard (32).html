@@ -1,0 +1,1123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COACHFLOW - Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            /* Brand Colors */
+            --brand-red: #4ade80;
+            --brand-black: #1a4d2e;
+            --brand-white: #FFFFFF;
+            
+            /* Functional Grays */
+            --gray-50: #F5F5F5;
+            --gray-200: #E0E0E0;
+            --gray-500: #808080;
+            --gray-900: #333333;
+            --dark-gray: #0f2818;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #1a4d2e 0%, #0f2818 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 50px;
+            padding: 40px 20px;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.3rem;
+            color: #4ade80;
+            margin-bottom: 10px;
+        }
+
+        .header .tagline {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.8);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Workflow Section */
+        .workflow {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 16px;
+            padding: 40px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .workflow h2 {
+            color: #1a4d2e;
+            font-size: 2rem;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .workflow-visual {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .workflow-tool {
+            background: linear-gradient(135deg, #ffffff, #f0fdf4);
+            border: 3px solid #e5e7eb;
+            border-radius: 16px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .workflow-tool:hover {
+            border-color: #4ade80;
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 8px 24px rgba(74, 222, 128, 0.3);
+        }
+
+        .workflow-tool-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            filter: drop-shadow(0 4px 8px rgba(74, 222, 128, 0.3));
+        }
+
+        .workflow-tool-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #1a4d2e;
+            margin-bottom: 8px;
+        }
+
+        .workflow-tool-desc {
+            font-size: 0.85rem;
+            color: #6b7280;
+            line-height: 1.4;
+        }
+
+        .workflow-tool-badge {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background: linear-gradient(135deg, #1a4d2e, #4ade80);
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .workflow-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, #1a4d2e, #4ade80);
+            color: white;
+            padding: 30px;
+            border-radius: 50%;
+            width: 180px;
+            height: 180px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 32px rgba(74, 222, 128, 0.4);
+            z-index: 10;
+        }
+
+        .workflow-center-icon {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+
+        .workflow-center-text {
+            font-size: 1.1rem;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .workflow-connection {
+            position: absolute;
+            width: 2px;
+            background: linear-gradient(to bottom, #4ade80, transparent);
+            height: 50px;
+        }
+
+        @media (max-width: 1024px) {
+            .workflow-visual {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .workflow-center {
+                display: none;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .workflow-visual {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Recent Activity Summary */
+        .recent-activity {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .recent-activity h2 {
+            color: #1a4d2e;
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .summary-card {
+            background: #f9fafb;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .summary-card:hover {
+            border-color: #4ade80;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(74, 222, 128, 0.2);
+        }
+
+        .summary-card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .summary-icon {
+            background: linear-gradient(135deg, #1a4d2e, #4ade80);
+            color: white;
+            width: 45px;
+            height: 45px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .summary-card h3 {
+            color: #1a4d2e;
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        .summary-content {
+            color: #4b5563;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .summary-content p {
+            margin-bottom: 8px;
+        }
+
+        .summary-empty {
+            color: #9ca3af;
+            font-style: italic;
+            font-size: 0.9rem;
+        }
+
+        .summary-stat {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .summary-stat:last-child {
+            border-bottom: none;
+        }
+
+        .summary-stat-label {
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+
+        .summary-stat-value {
+            color: #1a4d2e;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        /* Tool Cards Grid */
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .tool-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+
+        .tool-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.4);
+        }
+
+        .tool-header {
+            padding: 30px;
+            background: linear-gradient(135deg, #000000, #4ade80);
+            color: white;
+            text-align: center;
+        }
+
+        .tool-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+
+        .tool-header h2 {
+            font-size: 1.6rem;
+            margin-bottom: 8px;
+        }
+
+        .tool-header p {
+            font-size: 0.95rem;
+            opacity: 0.9;
+        }
+
+        .tool-body {
+            padding: 30px;
+        }
+
+        .tool-description {
+            color: #4b5563;
+            line-height: 1.7;
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+        }
+
+        .tool-features {
+            list-style: none;
+            margin-bottom: 25px;
+        }
+
+        .tool-features li {
+            color: #374151;
+            padding: 8px 0;
+            padding-left: 25px;
+            position: relative;
+            font-size: 0.9rem;
+        }
+
+        .tool-features li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #4ade80;
+            font-weight: 700;
+        }
+
+        .tool-status {
+            background: #f0fdf4;
+            border: 2px solid #86efac;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .tool-status.not-started {
+            background: #fef3c7;
+            border-color: #fbbf24;
+        }
+
+        .tool-status strong {
+            color: #166534;
+            font-size: 0.9rem;
+        }
+
+        .tool-status.not-started strong {
+            color: #92400e;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #000000, #4ade80);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(74, 222, 128, 0.4);
+        }
+
+        .btn-secondary {
+            background: #e5e7eb;
+            color: #1f2937;
+        }
+
+        .btn-secondary:hover {
+            background: #d1d5db;
+        }
+
+        /* Quick Start Guide */
+        .quick-start {
+            background: white;
+            border-radius: 16px;
+            padding: 35px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .quick-start h2 {
+            color: #000000;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+
+        .quick-start-steps {
+            display: grid;
+            gap: 15px;
+        }
+
+        .quick-start-step {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            padding: 15px;
+            background: #f9fafb;
+            border-radius: 8px;
+            border-left: 4px solid #4ade80;
+        }
+
+        .quick-start-step .step-num {
+            background: linear-gradient(135deg, #000000, #4ade80);
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .quick-start-step .step-content h3 {
+            color: #1f2937;
+            margin-bottom: 5px;
+            font-size: 1.1rem;
+        }
+
+        .quick-start-step .step-content p {
+            color: #6b7280;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.7);
+            padding: 20px;
+            font-size: 0.9rem;
+        }
+
+        /* Modal/Popup */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            max-width: 600px;
+            width: 100%;
+            padding: 40px;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #e5e7eb;
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            color: #1f2937;
+        }
+
+        .modal-close:hover {
+            background: #d1d5db;
+        }
+
+        .modal h2 {
+            color: #000000;
+            margin-bottom: 20px;
+        }
+
+        .modal p {
+            color: #4b5563;
+            line-height: 1.7;
+            margin-bottom: 15px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 25px;
+        }
+
+        @media (max-width: 768px) {
+            .workflow-steps {
+                flex-direction: column;
+            }
+            .workflow-arrow {
+                transform: rotate(90deg);
+            }
+            .header h1 {
+                font-size: 2rem;
+            }
+            .tools-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>⚽ COACHFLOW</h1>
+            <p>Welcome to CoachFlow. Where philosophy becomes performance.</p>
+            <p class="tagline">Build your philosophy, plan training, develop players—all in one place</p>
+        </div>
+
+        <!-- Workflow Overview -->
+        <div class="workflow">
+            <h2>🔄 Your Complete Coaching System</h2>
+            <p style="text-align: center; color: #6b7280; margin-bottom: 40px; font-size: 1.05rem;">
+                9 integrated tools working together to transform your coaching workflow
+            </p>
+            
+            <div class="workflow-visual">
+                <!-- Row 1 -->
+                <div class="workflow-tool" onclick="openTool('game-model')">
+                    <div class="workflow-tool-badge">1</div>
+                    <div class="workflow-tool-icon">🎯</div>
+                    <div class="workflow-tool-title">Game Model</div>
+                    <div class="workflow-tool-desc">Define your philosophy & principles</div>
+                </div>
+
+                <div class="workflow-tool" onclick="openTool('session-planner')">
+                    <div class="workflow-tool-badge">2</div>
+                    <div class="workflow-tool-icon">📋</div>
+                    <div class="workflow-tool-title">Session Planner</div>
+                    <div class="workflow-tool-desc">Generate AI-powered training sessions</div>
+                </div>
+
+                <div class="workflow-tool" onclick="openTool('session-library')">
+                    <div class="workflow-tool-badge">3</div>
+                    <div class="workflow-tool-icon">📚</div>
+                    <div class="workflow-tool-title">Session Library</div>
+                    <div class="workflow-tool-desc">Browse 40+ professional drills</div>
+                </div>
+
+                <!-- Row 2 -->
+                <div class="workflow-tool" onclick="openTool('teams-game-plans')">
+                    <div class="workflow-tool-badge">4</div>
+                    <div class="workflow-tool-icon">⚽</div>
+                    <div class="workflow-tool-title">Teams</div>
+                    <div class="workflow-tool-desc">Organize squads & game plans</div>
+                </div>
+
+                <div class="workflow-tool" onclick="openTool('match-day-game-plan')">
+                    <div class="workflow-tool-badge">5</div>
+                    <div class="workflow-tool-icon">🎯</div>
+                    <div class="workflow-tool-title">Match-Day Plan</div>
+                    <div class="workflow-tool-desc">Build pre-match strategies</div>
+                </div>
+
+                <div class="workflow-tool" onclick="openTool('game-review')">
+                    <div class="workflow-tool-badge">6</div>
+                    <div class="workflow-tool-icon">📊</div>
+                    <div class="workflow-tool-title">Game Review</div>
+                    <div class="workflow-tool-desc">Analyze matches objectively</div>
+                </div>
+
+                <!-- Row 3 -->
+                <div class="workflow-tool" onclick="openTool('player-profiles')">
+                    <div class="workflow-tool-badge">7</div>
+                    <div class="workflow-tool-icon">👥</div>
+                    <div class="workflow-tool-title">Player Profiles</div>
+                    <div class="workflow-tool-desc">Track roster stats & attendance</div>
+                </div>
+
+                <div class="workflow-tool" onclick="openTool('idp')">
+                    <div class="workflow-tool-badge">8</div>
+                    <div class="workflow-tool-icon">👤</div>
+                    <div class="workflow-tool-title">Development Plans</div>
+                    <div class="workflow-tool-desc">Personalized player growth</div>
+                </div>
+
+                <div class="workflow-tool" style="background: linear-gradient(135deg, #1a4d2e, #4ade80); border-color: #4ade80;">
+                    <div class="workflow-tool-icon" style="filter: none;">⚡</div>
+                    <div class="workflow-tool-title" style="color: white;">All Connected</div>
+                    <div class="workflow-tool-desc" style="color: rgba(255,255,255,0.9);">Data flows between tools automatically</div>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 40px; padding: 25px; background: #f0fdf4; border-radius: 12px; border-left: 4px solid #4ade80;">
+                <p style="color: #1a4d2e; font-size: 1.05rem; line-height: 1.6;">
+                    <strong>The Flow:</strong> Build your philosophy → Plan training → Organize teams → Prepare for matches → Review performance → Develop players. Everything syncs automatically through localStorage.
+                </p>
+            </div>
+        </div>
+
+        <!-- Recent Activity Summary -->
+        <div class="recent-activity">
+            <h2>📊 Your CoachFlow at a Glance</h2>
+            <div class="summary-grid">
+                <!-- Game Model Summary -->
+                <div class="summary-card">
+                    <div class="summary-card-header">
+                        <div class="summary-icon">🎯</div>
+                        <h3>Game Model</h3>
+                    </div>
+                    <div class="summary-content" id="gameModelSummary">
+                        <p class="summary-empty">No game model created yet</p>
+                    </div>
+                </div>
+
+                <!-- Recent Sessions Summary -->
+                <div class="summary-card">
+                    <div class="summary-card-header">
+                        <div class="summary-icon">📋</div>
+                        <h3>Recent Sessions</h3>
+                    </div>
+                    <div class="summary-content" id="sessionsSummary">
+                        <p class="summary-empty">No sessions created yet</p>
+                    </div>
+                </div>
+
+                <!-- Active IDPs Summary -->
+                <div class="summary-card">
+                    <div class="summary-card-header">
+                        <div class="summary-icon">👥</div>
+                        <h3>Player Development</h3>
+                    </div>
+                    <div class="summary-content" id="idpSummary">
+                        <p class="summary-empty">No development plans created yet</p>
+                    </div>
+                </div>
+
+                <!-- Game Reviews Summary -->
+                <div class="summary-card">
+                    <div class="summary-card-header">
+                        <div class="summary-icon">📊</div>
+                        <h3>Match Analysis</h3>
+                    </div>
+                    <div class="summary-content" id="reviewsSummary">
+                        <p class="summary-empty">No match reviews yet</p>
+                    </div>
+                </div>
+
+                <!-- Teams Summary -->
+                <div class="summary-card">
+                    <div class="summary-card-header">
+                        <div class="summary-icon">⚽</div>
+                        <h3>Teams</h3>
+                    </div>
+                    <div class="summary-content" id="teamsSummary">
+                        <p class="summary-empty">No teams created yet</p>
+                    </div>
+                </div>
+
+                <!-- Match-Day Game Plans Summary -->
+                <div class="summary-card">
+                    <div class="summary-card-header">
+                        <div class="summary-icon">🎯</div>
+                        <h3>Game Plans</h3>
+                    </div>
+                    <div class="summary-content" id="gamePlansSummary">
+                        <p class="summary-empty">No game plans created yet</p>
+                    </div>
+                </div>
+
+                <!-- Player Profiles Summary -->
+                <div class="summary-card">
+                    <div class="summary-card-header">
+                        <div class="summary-icon">👥</div>
+                        <h3>Player Roster</h3>
+                    </div>
+                    <div class="summary-content" id="playersSummary">
+                        <p class="summary-empty">No players added yet</p>
+                    </div>
+                </div>
+
+                <!-- Session Library Summary -->
+                <div class="summary-card">
+                    <div class="summary-card-header">
+                        <div class="summary-icon">📚</div>
+                        <h3>Library</h3>
+                    </div>
+                    <div class="summary-content" id="librarySummary">
+                        <p class="summary-info">40+ drills available to browse</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>COACHFLOW • Transform chaos into clarity • Where philosophy becomes performance</p>
+        </div>
+    </div>
+
+    <!-- Info Modal -->
+    <div class="modal" id="infoModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal()">×</button>
+            <h2 id="modalTitle">Tool Information</h2>
+            <div id="modalBody">
+                <!-- Dynamic content -->
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-primary" id="modalActionBtn">Open Tool</button>
+                <button class="btn btn-secondary" onclick="closeModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Store which tools have been accessed
+        let toolsUsed = {
+            gameModel: localStorage.getItem('gameModel') === 'true',
+            sessionPlanner: localStorage.getItem('sessionPlanner') === 'true',
+            sessionLibrary: localStorage.getItem('sessionLibrary') === 'true',
+            teamsGamePlans: localStorage.getItem('teamsGamePlans') === 'true',
+            matchDayGamePlan: localStorage.getItem('matchDayGamePlan') === 'true',
+            gameReview: localStorage.getItem('gameReview') === 'true',
+            playerProfiles: localStorage.getItem('playerProfiles') === 'true',
+            idp: localStorage.getItem('idp') === 'true'
+        };
+
+        // Open tools - navigate directly
+        function openTool(toolName) {
+            const urls = {
+                'game-model': 'game-model-simple.html',
+                'session-planner': 'session-planner.html',
+                'session-library': 'session-library.html',
+                'game-review': 'game-review-tool.html',
+                'idp': 'individual-development-planner.html',
+                'match-day-game-plan': 'match-day-game-plan.html',
+                'player-profiles': 'player-profiles.html',
+                'teams-game-plans': 'teams-game-plans.html'
+            };
+
+            // Mark as used
+            if (toolName === 'game-model') {
+                localStorage.setItem('gameModel', 'true');
+                toolsUsed.gameModel = true;
+            } else if (toolName === 'session-planner') {
+                localStorage.setItem('sessionPlanner', 'true');
+                toolsUsed.sessionPlanner = true;
+            } else if (toolName === 'session-library') {
+                localStorage.setItem('sessionLibrary', 'true');
+                toolsUsed.sessionLibrary = true;
+            } else if (toolName === 'game-review') {
+                localStorage.setItem('gameReview', 'true');
+                toolsUsed.gameReview = true;
+            } else if (toolName === 'idp') {
+                localStorage.setItem('idp', 'true');
+            } else if (toolName === 'match-day-game-plan') {
+                localStorage.setItem('matchDayGamePlan', 'true');
+                toolsUsed.matchDayGamePlan = true;
+            } else if (toolName === 'player-profiles') {
+                localStorage.setItem('playerProfiles', 'true');
+                toolsUsed.playerProfiles = true;
+            } else if (toolName === 'teams-game-plans') {
+                localStorage.setItem('teamsGamePlans', 'true');
+                toolsUsed.teamsGamePlans = true;
+            }
+
+            // Close modal if open
+            const modal = document.getElementById('infoModal');
+            if (modal) {
+                modal.classList.remove('active');
+            }
+
+            // Navigate to tool
+            window.location.href = urls[toolName];
+        }
+
+        function showInfo(toolName) {
+            const modal = document.getElementById('infoModal');
+            const title = document.getElementById('modalTitle');
+            const body = document.getElementById('modalBody');
+            const actionBtn = document.getElementById('modalActionBtn');
+
+            const info = {
+                'game-model': {
+                    title: '🎯 Game Model Builder',
+                    content: `
+                        <p><strong>What it does:</strong> Helps you define and articulate your coaching philosophy through a guided questionnaire.</p>
+                        <p><strong>Best for:</strong> New coaches building their identity, or experienced coaches wanting to formalize their approach.</p>
+                        <p><strong>Output:</strong> A complete game model document covering identity, possession, defense, transitions, and core principles.</p>
+                        <p><strong>Why start here:</strong> This becomes the foundation. Your sessions and player development will align to these principles.</p>
+                    `,
+                    action: () => openTool('game-model')
+                },
+                'session-planner': {
+                    title: '📋 Session Planner',
+                    content: `
+                        <p><strong>What it does:</strong> Generates complete training sessions based on your focus, match-day context, and physical load targets.</p>
+                        <p><strong>Best for:</strong> Weekly session planning, adapting to opponent tendencies, addressing team weaknesses.</p>
+                        <p><strong>Output:</strong> 4 progressive activities with organization, constraints, coaching points, and variations.</p>
+                        <p><strong>Time saved:</strong> 30-45 minutes per session compared to planning from scratch.</p>
+                    `,
+                    action: () => openTool('session-planner')
+                },
+                'session-library': {
+                    title: '📚 Session Library',
+                    content: `
+                        <p><strong>What it does:</strong> Browse a curated collection of 40+ professional training activities organized by principle, phase, and complexity.</p>
+                        <p><strong>Best for:</strong> Finding inspiration, customizing sessions, learning new drills, building sessions manually.</p>
+                        <p><strong>Output:</strong> Full activity details including organization, rules, coaching points, progressions, and regressions.</p>
+                        <p><strong>Use case:</strong> When Session Planner gives you 80% of what you need, swap in activities from the Library to make it perfect.</p>
+                    `,
+                    action: () => openTool('session-library')
+                },
+                'game-review': {
+                    title: '📊 Game Review Tool',
+                    content: `
+                        <p><strong>What it does:</strong> Transforms emotional post-match reactions into structured, objective analysis and actionable training priorities.</p>
+                        <p><strong>Best for:</strong> Monday morning reviews, identifying weekly training themes, keeping improvement focused.</p>
+                        <p><strong>Output:</strong> Complete match analysis with performance ratings, successes, challenges, and 3 training priorities for the week.</p>
+                        <p><strong>Impact:</strong> Closes the feedback loop from match → review → training → improvement.</p>
+                    `,
+                    action: () => openTool('game-review')
+                },
+                'idp': {
+                    title: '👤 Individual Development Planner',
+                    content: `
+                        <p><strong>What it does:</strong> Creates personalized development plans with specific focus areas, daily habits, and progress tracking.</p>
+                        <p><strong>Best for:</strong> Player meetings, parent conferences, recruitment profiles, goal-setting conversations.</p>
+                        <p><strong>Output:</strong> A professional development plan the player can reference and work from daily.</p>
+                        <p><strong>Impact:</strong> Shows players you're invested in their individual growth, not just team results.</p>
+                    `,
+                    action: () => openTool('idp')
+                },
+                'match-day-game-plan': {
+                    title: '🎯 Match-Day Game Plan',
+                    content: `
+                        <p><strong>What it does:</strong> Builds complete pre-match game plans with objectives, tactics by phase, and opponent analysis.</p>
+                        <p><strong>Best for:</strong> Team briefings, pre-match meetings, locker room presentations, tactical preparation.</p>
+                        <p><strong>Output:</strong> A professional game plan document covering possession, defense, transitions, and opponent scouting.</p>
+                        <p><strong>Impact:</strong> Players arrive prepared knowing exactly what the game plan is and how to execute it.</p>
+                    `,
+                    action: () => openTool('match-day-game-plan')
+                },
+                'player-profiles': {
+                    title: '👥 Player Profiles',
+                    content: `
+                        <p><strong>What it does:</strong> Manage your team roster with player cards tracking attendance, stats, and performance metrics.</p>
+                        <p><strong>Best for:</strong> Roster management, stat tracking, attendance monitoring, linking players to development plans.</p>
+                        <p><strong>Output:</strong> Visual player cards with goals, assists, passes, tackles, saves, and attendance rates.</p>
+                        <p><strong>Impact:</strong> Complete team visibility with one-click access to create Individual Development Plans for each player.</p>
+                    `,
+                    action: () => openTool('player-profiles')
+                },
+                'teams-game-plans': {
+                    title: '⚽ Teams & Game Plans',
+                    content: `
+                        <p><strong>What it does:</strong> Organize multiple teams and manage all match-day game plans in one place with visual team cards.</p>
+                        <p><strong>Best for:</strong> Multi-team management, organizing strategies by squad, tracking game plan history.</p>
+                        <p><strong>Output:</strong> Team cards showing descriptions, game plan counts, and quick access to create new strategies.</p>
+                        <p><strong>Impact:</strong> Complete organization of all teams and their tactical approaches in a clean, visual interface.</p>
+                    `,
+                    action: () => openTool('teams-game-plans')
+                }
+            };
+
+            const toolInfo = info[toolName];
+            title.textContent = toolInfo.title;
+            body.innerHTML = toolInfo.content;
+            actionBtn.onclick = toolInfo.action;
+
+            modal.classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('infoModal').classList.remove('active');
+        }
+
+        // Close modal on background click
+        document.getElementById('infoModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        // Initialize
+        updateRecentActivitySummary();
+
+        // Update Recent Activity Summary Cards
+        function updateRecentActivitySummary() {
+            // Game Model Summary
+            const gameModelData = localStorage.getItem('lastGameModel');
+            if (gameModelData) {
+                try {
+                    const model = JSON.parse(gameModelData);
+                    document.getElementById('gameModelSummary').innerHTML = `
+                        <div class="summary-stat">
+                            <span class="summary-stat-label">Formation:</span>
+                            <span class="summary-stat-value">${model.formation || 'Not specified'}</span>
+                        </div>
+                        <div class="summary-stat">
+                            <span class="summary-stat-label">Style:</span>
+                            <span class="summary-stat-value">${model.style || 'Not specified'}</span>
+                        </div>
+                        <p style="margin-top: 10px; font-size: 0.85rem; color: #6b7280;">
+                            Created: ${new Date(model.date).toLocaleDateString()}
+                        </p>
+                    `;
+                } catch (e) {
+                    console.log('Error parsing game model data');
+                }
+            }
+
+            // Sessions Summary
+            const sessionsData = localStorage.getItem('recentSessions');
+            if (sessionsData) {
+                try {
+                    const sessions = JSON.parse(sessionsData);
+                    const recentCount = sessions.length;
+                    const lastSession = sessions[sessions.length - 1];
+                    document.getElementById('sessionsSummary').innerHTML = `
+                        <div class="summary-stat">
+                            <span class="summary-stat-label">Total Created:</span>
+                            <span class="summary-stat-value">${recentCount}</span>
+                        </div>
+                        <div class="summary-stat">
+                            <span class="summary-stat-label">Last Session:</span>
+                            <span class="summary-stat-value">${lastSession.principle || 'Session'}</span>
+                        </div>
+                        <p style="margin-top: 10px; font-size: 0.85rem; color: #6b7280;">
+                            ${new Date(lastSession.date).toLocaleDateString()}
+                        </p>
+                    `;
+                } catch (e) {
+                    console.log('Error parsing sessions data');
+                }
+            }
+
+            // IDPs Summary
+            const idpsData = localStorage.getItem('activePlayers');
+            if (idpsData) {
+                try {
+                    const idps = JSON.parse(idpsData);
+                    const playerCount = idps.length;
+                    document.getElementById('idpSummary').innerHTML = `
+                        <div class="summary-stat">
+                            <span class="summary-stat-label">Active Plans:</span>
+                            <span class="summary-stat-value">${playerCount}</span>
+                        </div>
+                        <div style="margin-top: 10px;">
+                            ${idps.slice(0, 3).map(p => `<p style="font-size: 0.9rem; color: #4b5563;">• ${p.name}</p>`).join('')}
+                            ${playerCount > 3 ? `<p style="font-size: 0.85rem; color: #9ca3af; margin-top: 5px;">+${playerCount - 3} more</p>` : ''}
+                        </div>
+                    `;
+                } catch (e) {
+                    console.log('Error parsing IDPs data');
+                }
+            }
+
+            // Game Reviews Summary
+            const reviewsData = localStorage.getItem('gameReviews');
+            if (reviewsData) {
+                try {
+                    const reviews = JSON.parse(reviewsData);
+                    const reviewCount = reviews.length;
+                    const lastReview = reviews[reviews.length - 1];
+                    const wins = reviews.filter(r => r.result === 'Win').length;
+                    const draws = reviews.filter(r => r.result === 'Draw').length;
+                    const losses = reviews.filter(r => r.result === 'Loss').length;
+                    
+                    document.getElementById('reviewsSummary').innerHTML = `
+                        <div class="summary-stat">
+                            <span class="summary-stat-label">Matches Reviewed:</span>
+                            <span class="summary-stat-value">${reviewCount}</span>
+                        </div>
+                        <div class="summary-stat">
+                            <span class="summary-stat-label">Record:</span>
+                            <span class="summary-stat-value">${wins}W-${draws}D-${losses}L</span>
+                        </div>
+                        <p style="margin-top: 10px; font-size: 0.85rem; color: #6b7280;">
+                            Last: vs ${lastReview.opponent || 'Unknown'}
+                        </p>
+                    `;
+                } catch (e) {
+                    console.log('Error parsing reviews data');
+                }
+            }
+
+            // Teams Summary
+            const teamsData = localStorage.getItem('coachflowTeams');
+            if (teamsData) {
+                try {
+                    const teams = JSON.parse(teamsData);
+                    const teamCount = teams.length;
+                    document.getElementById('teamsSummary').innerHTML = `
+                        <div class="summary-stat">
+                            <span class="summary-stat-label">Teams Created:</span>
+                            <span class="summary-stat-value">${teamCount}</span>
+                        </div>
+                        <div style="margin-top: 10px;">
+                            ${teams.slice(0, 3).map(t => `<p style="font-size: 0.9rem; color: #4b5563;">• ${t.name}</p>`).join('')}
+                            ${teamCount > 3 ? `<p style="font-size: 0.85rem; color: #9ca3af; margin-top: 5px;">+${teamCount - 3} more</p>` : ''}
+                        </div>
+                    `;
+                } catch (e) {
+                    console.log('Error parsing teams data');
+                }
+            }
+
+            // Game Plans Summary
+            const gamePlansData = localStorage.getItem('gamePlans');
+            if (gamePlansData) {
+                try {
+                    const plans = JSON.parse(gamePlansData);
+                    const planCount = plans.length;
+                    const lastPlan = plans[plans.length - 1];
+                    document.getElementById('gamePlansSummary').innerHTML = `
+                        <div class="summary-stat">
+                            <span class="summary-stat-label">Plans Created:</span>
+                            <span class="summary-stat-value">${planCount}</span>
+                        </div>
+                        <div class="summary-stat">
+                            <span class="summary-stat-label">Most Recent:</span>
+                            <span class="summary-stat-value">vs ${lastPlan.opponent || 'TBD'}</span>
+                        </div>
+                        <p style="margin-top: 10px; font-size: 0.85rem; color: #6b7280;">
+                            ${new Date(lastPlan.date).toLocaleDateString()}
+                        </p>
+                    `;
+                } catch (e) {
+                    console.log('Error parsing game plans data');
+                }
+            }
+
+            // Player Profiles Summary
+            const playersData = localStorage.getItem('playerProfiles');
+            if (playersData) {
+                try {
+                    const players = JSON.parse(playersData);
+                    const playerCount = players.length;
+                    const positions = {
+                        'Goalkeeper': players.filter(p => p.position === 'Goalkeeper').length,
+                        'Defender': players.filter(p => p.position === 'Defender').length,
+                        'Midfielder': players.filter(p => p.position === 'Midfielder').length,
+                        'Forward': players.filter(p => p.position === 'Forward').length
+                    };
+                    document.getElementById('playersSummary').innerHTML = `
+                        <div class="summary-stat">
+                            <span class="summary-stat-label">Total Players:</span>
+                            <span class="summary-stat-value">${playerCount}</span>
+                        </div>
+                        <div style="margin-top: 10px; font-size: 0.85rem; color: #6b7280;">
+                            <p>GK: ${positions.Goalkeeper} | DEF: ${positions.Defender}</p>
+                            <p>MID: ${positions.Midfielder} | FWD: ${positions.Forward}</p>
+                        </div>
+                    `;
+                } catch (e) {
+                    console.log('Error parsing players data');
+                }
+            }
+        }
+    </script>
+</body>
+</html>
